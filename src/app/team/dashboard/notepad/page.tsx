@@ -64,42 +64,38 @@ export default function NotepadPage() {
 
   const processNote = async (note: Note) => {
     setProcessing(note.id)
-
-    // Analyze content and determine where it should go
-    const content = note.content.toLowerCase()
-    let category = 'idea'
-    let details = ''
-
-    // Simple keyword-based classification
-    if (content.includes('traba') || content.includes('bloqueado') || content.includes('problema') || content.includes('no se puede') || content.includes('falta')) {
-      category = 'traba'
-    } else if (content.includes('riesgo') || content.includes('peligro') || content.includes('cuidado')) {
-      category = 'riesgo'
-    } else if (content.includes('decidimos') || content.includes('decisión') || content.includes('definimos') || content.includes('elegimos')) {
-      category = 'decisión'
-    } else if (content.includes('recurso') || content.includes('link') || content.includes('http') || content.includes('repo') || content.includes('doc')) {
-      category = 'recurso'
-    } else if (content.includes('reunión') || content.includes('reunion') || content.includes('nos juntamos')) {
-      category = 'reunión'
-    }
-
     const sb = createClient()
 
     try {
+      // Call AI classification API
+      const res = await fetch('/api/classify-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: note.content, userId: note.user_id }),
+      })
+
+      if (!res.ok) throw new Error('Classification failed')
+      const ai = await res.json()
+
+      const category = ai.category || 'idea'
+      const title = ai.title || note.content.slice(0, 80)
+      const description = ai.description || note.content
+      const priority = ai.priority || 'media'
+      let details = ''
+
       switch (category) {
         case 'traba': {
           await sb.from('blockers').insert({
-            id: `b${Date.now()}`, title: note.content.slice(0, 80),
-            description: note.content, priority: 'media',
+            id: `b${Date.now()}`, title, description, priority,
             assignee: note.user_id, status: 'abierta', created_at: note.created_at,
           })
-          details = '→ Trabas (prioridad media)'
+          details = `→ Trabas (${priority})`
           break
         }
         case 'riesgo': {
           await sb.from('risks').insert({
-            id: `rk${Date.now()}`, title: note.content.slice(0, 80),
-            description: note.content, probability: 'media', impact: 'medio',
+            id: `rk${Date.now()}`, title, description,
+            probability: priority, impact: priority === 'alta' ? 'alto' : 'medio',
             mitigation: '', owner: note.user_id, status: 'activo',
             category: 'operativo', created_at: note.created_at,
           })
@@ -109,29 +105,36 @@ export default function NotepadPage() {
         case 'recurso': {
           const urlMatch = note.content.match(/https?:\/\/[^\s]+/)
           await sb.from('resources').insert({
-            id: `r${Date.now()}`, title: note.content.slice(0, 80),
-            url: urlMatch?.[0] || '#', type: 'link',
+            id: `r${Date.now()}`, title, url: urlMatch?.[0] || '#', type: 'link',
             added_by: note.user_id, created_at: note.created_at,
           })
           details = '→ Recursos'
           break
         }
+        case 'decision': {
+          await sb.from('decisions').insert({
+            id: `d${Date.now()}`, date: note.created_at.split('T')[0], title,
+            context: description, decision: title,
+            alternatives: [], rationale: description,
+            decided_by: [note.user_id], impact: priority, category: 'producto',
+          })
+          details = '→ Decisiones'
+          break
+        }
         default: {
           await sb.from('ideas').insert({
-            id: `i${Date.now()}`, title: note.content.slice(0, 80),
-            description: note.content, status: 'nueva',
-            author: note.user_id, created_at: note.created_at,
+            id: `i${Date.now()}`, title, description,
+            status: 'nueva', author: note.user_id, created_at: note.created_at,
           })
           details = '→ Ideas (nueva)'
           break
         }
       }
 
-      // Mark as processed
-      const result = `Clasificado como ${category} ${details}`
+      const result = `${ai.summary || `Clasificado como ${category}`} ${details}`
       await sb.from('notepad').update({ processed: true, processed_result: result }).eq('id', note.id)
       setNotes(notes.map(n => n.id === note.id ? { ...n, processed: true, processed_result: result } : n))
-      addActivity(note.user_id, 'procesó nota', `${note.content.slice(0, 40)}... ${details}`)
+      addActivity(note.user_id, 'procesó nota', `${title} ${details}`)
     } catch (e) {
       console.error('processNote error', e)
     }
