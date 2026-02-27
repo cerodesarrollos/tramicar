@@ -17,6 +17,11 @@ export const TEAM_USERS: TeamUser[] = [
   { id: 'diego', name: 'Diego', role: 'Advisor', password: 'adv123', avatar: '🎯', color: '#f59e0b' },
 ]
 
+// Diego Cassinera — Perfil
+// Ex OLX, Letgo, MercadoLibre, Oracle. Board of Advisors en Alpha Capital (Alec Oxenford).
+// Trabajó bajo Vinton Cerf. Patente en sincronización móvil-DB. 4x V100 corriendo LLMs locales.
+// Vecino de Jony. Validó la idea de Tramicar al instante.
+
 export interface RoadmapPhase {
   id: string
   name: string
@@ -79,24 +84,39 @@ export interface Meeting {
 
 export const INITIAL_MEETINGS: Meeting[] = [
   {
-    id: 'm1', date: '2026-02-27', title: 'Sync semanal — Sprint MVP',
-    attendees: ['matias', 'jony', 'diego'],
-    notes: 'Se revisó el avance del MVP. Dashboard1 completo con 6 páginas. Flujo vendedor y comprador funcionando. Firma biométrica diseñada. Diego impresionado con el ritmo. Discusión sobre estrategia DNRPA: no pedir nada a Diego todavía, mostrar avances y que él proponga involucrarse.',
+    id: 'm1', date: '2026-02-27', title: 'Sprint MVP — Día 2',
+    attendees: ['matias'],
+    notes: 'Matias solo, ejecutando. Dashboard1 completo con 6 páginas: flujo vendedor (11 pasos secuenciales), flujo comprador (progreso real-time), informes expandibles, firma biométrica 08D completa (DNI + selfie + RENAPER + firma). Dashboard interno del equipo creado con 9 secciones (Overview, Roadmap, Decisiones, Riesgos, Reuniones, Ideas, Trabas, Recursos, Actividad). Deploy en tramicar.aidaptive.com.ar.',
     actionItems: [
-      { text: 'Armar dashboard interno del equipo', assignee: 'matias', done: false },
-      { text: 'Preparar demo realista para inversores', assignee: 'matias', done: false },
-      { text: 'Mapear contactos registros automotores CABA', assignee: 'jony', done: false },
-      { text: 'Revisar propuesta DNRPA y dar feedback', assignee: 'diego', done: false },
+      { text: 'Dashboard interno del equipo', assignee: 'matias', done: true },
+      { text: 'Decision Log + Risk Register', assignee: 'matias', done: true },
+      { text: 'Simulación demo realista vendedor↔comprador', assignee: 'matias', done: false },
+      { text: 'Badges AES-256 en pasos de DNI/selfie', assignee: 'matias', done: false },
+      { text: 'Crear grupo WhatsApp del equipo', assignee: 'jony', done: false },
     ]
   },
   {
-    id: 'm2', date: '2026-02-25', title: 'Kickoff Tramicar',
+    id: 'm2', date: '2026-02-26', title: 'Reunión fundacional — Matias + Jony + Diego',
+    attendees: ['matias', 'jony', 'diego'],
+    notes: 'Primera reunión presencial los tres. Diego validó todo lo que Matias presentó (Datacar API, estrategia, análisis). Diego planteó visión macro: marketplace de autos como primer paso → cross-posting en ML/Kavak → Tramicar como servicio dentro del marketplace → financiamiento con bancos. Jony piensa micro (el trámite), Diego piensa macro (el ecosistema), Matias es el puente. Diego no habló de equity — no le interesa meterse por participación chica. Matias quedó muy bien parado. Diego tiene amigo con inmobiliaria grande en San Isidro (potencial cliente Star). Se acordó: Tramicar funcional primero (20 días), marketplace después como capa arriba. Reunión de seguimiento en ~10 días con app funcional + sorpresa (prototipo marketplace).',
+    actionItems: [
+      { text: 'App funcional para próxima reunión (~10 días)', assignee: 'matias', done: false },
+      { text: 'Prototipo marketplace como sorpresa', assignee: 'matias', done: false },
+      { text: 'Dashboard de métricas (autos más patentados, marcas, precios)', assignee: 'matias', done: false },
+      { text: 'Crear grupo WhatsApp para mostrar avances', assignee: 'jony', done: false },
+      { text: 'Confirmar préstamo 10k USD', assignee: 'jony', done: false },
+      { text: 'Contactar amigo inmobiliaria San Isidro (para Star)', assignee: 'diego', done: false },
+    ]
+  },
+  {
+    id: 'm3', date: '2026-02-25', title: 'Primer contacto — Jony presenta la idea',
     attendees: ['matias', 'jony'],
-    notes: 'Definición de sociedad 60/40. Scope del MVP. Jony se encarga de lo comercial, Matias de tecnología. Objetivo: tener demo funcional para fin de febrero.',
+    notes: 'Jony contacta a Matias por audio de WhatsApp. Presenta la idea de Tramicar: una app que automatice todo el proceso de compraventa de autos entre particulares (seña en escrow, informes DNRPA, verificación policial, turno en registro, coordinación de pago). Jony tiene la experiencia real ("hice 700 mil transferencias") y el dolor claro: gente que no compra autos por miedo a los trámites, multas que aparecen después de pagar, procesos confusos. Ya se lo mostró a Diego (su vecino, ex OLX/Letgo/ML) quien dijo "esto es espectacular". Matias acepta, arranca a construir el MVP el mismo día.',
     actionItems: [
       { text: 'Construir MVP Next.js + Supabase', assignee: 'matias', done: true },
       { text: 'Armar propuesta DNRPA', assignee: 'matias', done: true },
-      { text: 'Identificar primeros registros target', assignee: 'jony', done: false },
+      { text: 'Investigar Datacar API para informes', assignee: 'matias', done: true },
+      { text: 'Coordinar reunión presencial con Diego', assignee: 'jony', done: true },
     ]
   },
 ]
@@ -111,11 +131,14 @@ export interface Idea {
 }
 
 export const INITIAL_IDEAS: Idea[] = [
-  { id: 'i1', title: 'Integración MercadoLibre', description: 'Publicar autos en ML con transferencia garantizada por Tramicar. Diferencial enorme vs publicación normal.', status: 'evaluando', author: 'diego', createdAt: '2026-02-27' },
-  { id: 'i2', title: 'App mobile nativa', description: 'PWA funciona bien pero una app nativa daría más confianza para firma biométrica y fotos de documentos.', status: 'nueva', author: 'matias', createdAt: '2026-02-27' },
-  { id: 'i3', title: 'API para concesionarias', description: 'Ofrecer API white-label para que concesionarias integren Tramicar en su flujo de venta.', status: 'aprobada', author: 'jony', createdAt: '2026-02-26' },
-  { id: 'i4', title: 'Seguro de transferencia', description: 'Partnership con aseguradora para ofrecer seguro que cubra problemas post-transferencia.', status: 'nueva', author: 'diego', createdAt: '2026-02-26' },
-  { id: 'i5', title: 'Blockchain para trazabilidad', description: 'Registro inmutable de cada paso de la transferencia. Descartado: genera ruido con reguladores argentinos.', status: 'descartada', author: 'matias', createdAt: '2026-02-25' },
+  { id: 'i1', title: 'Marketplace de autos (tipo OLX)', description: 'Capa de marketplace arriba de Tramicar. Publicar autos y que la transferencia sea nativa. Genera tráfico y valuación. Idea de Diego.', status: 'aprobada', author: 'diego', createdAt: '2026-02-26' },
+  { id: 'i2', title: 'Cross-posting ML/Kavak/OLX', description: 'Publicar en marketplace Tramicar y replicar automáticamente en MercadoLibre, Kavak, etc. Un solo click, múltiples plataformas.', status: 'evaluando', author: 'diego', createdAt: '2026-02-26' },
+  { id: 'i3', title: 'Financiamiento con bancos', description: 'Integrar financiamiento bancario en el proceso de compra. Ser parte del proceso completo, no solo el trámite. Idea de Diego.', status: 'nueva', author: 'diego', createdAt: '2026-02-26' },
+  { id: 'i4', title: 'Patentamientos 0km para concesionarias', description: 'Suscripción mensual para concesionarias que hacen patentamientos en volumen. Ingreso recurrente.', status: 'aprobada', author: 'matias', createdAt: '2026-02-26' },
+  { id: 'i5', title: 'Data analytics como producto', description: 'Vender datos agregados a concesionarias/aseguradoras/bancos: autos más patentados, marcas más vendidas, precios promedio por zona.', status: 'evaluando', author: 'matias', createdAt: '2026-02-26' },
+  { id: 'i6', title: 'Sistema de referidos', description: 'Programa de referidos para que compradores/vendedores recomienden Tramicar. Growth orgánico.', status: 'aprobada', author: 'matias', createdAt: '2026-02-26' },
+  { id: 'i7', title: 'App mobile nativa', description: 'PWA funciona bien pero una app nativa daría más confianza para firma biométrica y fotos de documentos. Post-MVP.', status: 'nueva', author: 'matias', createdAt: '2026-02-27' },
+  { id: 'i8', title: 'Blockchain para trazabilidad', description: 'Registro inmutable de cada paso. Descartado como core: genera ruido con reguladores argentinos. Queda como feature futura de trazabilidad.', status: 'descartada', author: 'matias', createdAt: '2026-02-25' },
 ]
 
 export interface Blocker {
@@ -162,14 +185,26 @@ export interface Activity {
 }
 
 export const INITIAL_ACTIVITIES: Activity[] = [
-  { id: 'a1', user: 'matias', action: 'completó', target: 'Firma biométrica 08D', timestamp: '2026-02-27T13:00:00' },
-  { id: 'a2', user: 'matias', action: 'completó', target: 'Flujo comprador real-time', timestamp: '2026-02-27T12:30:00' },
-  { id: 'a3', user: 'diego', action: 'comentó en', target: 'Integración MercadoLibre', timestamp: '2026-02-27T11:00:00' },
-  { id: 'a4', user: 'matias', action: 'completó', target: 'Step tracker vendedor (11 pasos)', timestamp: '2026-02-27T10:00:00' },
-  { id: 'a5', user: 'jony', action: 'creó idea', target: 'API para concesionarias', timestamp: '2026-02-26T18:00:00' },
-  { id: 'a6', user: 'matias', action: 'creó', target: 'Propuesta DNRPA', timestamp: '2026-02-25T16:00:00' },
-  { id: 'a7', user: 'matias', action: 'desplegó', target: 'MVP en Vercel', timestamp: '2026-02-25T14:00:00' },
-  { id: 'a8', user: 'jony', action: 'se unió a', target: 'Tramicar', timestamp: '2026-02-25T10:00:00' },
+  // 27 Feb
+  { id: 'a01', user: 'matias', action: 'creó', target: 'Decision Log + Risk Register', timestamp: '2026-02-27T14:30:00' },
+  { id: 'a02', user: 'matias', action: 'creó', target: 'Dashboard interno del equipo (9 secciones)', timestamp: '2026-02-27T14:00:00' },
+  { id: 'a03', user: 'matias', action: 'completó', target: 'Firma biométrica 08D (DNI + selfie + RENAPER)', timestamp: '2026-02-27T13:00:00' },
+  { id: 'a04', user: 'matias', action: 'completó', target: 'Flujo comprador con progreso real-time', timestamp: '2026-02-27T12:30:00' },
+  { id: 'a05', user: 'matias', action: 'completó', target: 'Página de informes expandibles', timestamp: '2026-02-27T11:30:00' },
+  { id: 'a06', user: 'matias', action: 'completó', target: 'Step tracker vendedor (11 pasos secuenciales)', timestamp: '2026-02-27T10:00:00' },
+  // 26 Feb
+  { id: 'a07', user: 'diego', action: 'propuso', target: 'Marketplace de autos + cross-posting + financiamiento', timestamp: '2026-02-26T17:00:00' },
+  { id: 'a08', user: 'diego', action: 'validó', target: 'Análisis de Matias (Datacar API, estrategia)', timestamp: '2026-02-26T16:30:00' },
+  { id: 'a09', user: 'matias', action: 'presentó', target: 'MVP y estrategia en reunión fundacional', timestamp: '2026-02-26T16:00:00' },
+  { id: 'a10', user: 'jony', action: 'coordinó', target: 'Reunión presencial con Diego', timestamp: '2026-02-26T15:00:00' },
+  { id: 'a11', user: 'matias', action: 'completó', target: 'Flujo vendedor completo (carga vehículo + pre-diagnóstico)', timestamp: '2026-02-26T12:00:00' },
+  // 25 Feb
+  { id: 'a12', user: 'matias', action: 'desplegó', target: 'MVP en Vercel (landing + auth + dashboard)', timestamp: '2026-02-25T18:00:00' },
+  { id: 'a13', user: 'matias', action: 'creó', target: 'Propuesta DNRPA + Acuerdo de socios + Plan técnico', timestamp: '2026-02-25T16:00:00' },
+  { id: 'a14', user: 'matias', action: 'investigó', target: 'Datacar API (solo identificación, no informes legales)', timestamp: '2026-02-25T14:00:00' },
+  { id: 'a15', user: 'matias', action: 'inició', target: 'Construcción MVP (Next.js + Supabase)', timestamp: '2026-02-25T12:00:00' },
+  { id: 'a16', user: 'jony', action: 'presentó', target: 'Idea de Tramicar (audios WhatsApp)', timestamp: '2026-02-25T10:00:00' },
+  { id: 'a17', user: 'diego', action: 'se unió como', target: 'Advisor (validó la idea como "espectacular")', timestamp: '2026-02-25T10:00:00' },
 ]
 
 // === NEW: Decision Log ===
@@ -219,12 +254,22 @@ export const INITIAL_DECISIONS: Decision[] = [
     category: 'negocio',
   },
   {
-    id: 'd4', date: '2026-02-25', title: 'Sociedad 60/40 (Matias/Jony)',
-    context: 'Definición de la estructura societaria inicial de Tramicar.',
-    decision: '60% Matias (tech + producto), 40% Jony (comercial + operaciones)',
-    alternatives: ['50/50', '70/30', 'Incorporar a Diego como socio desde el inicio'],
-    rationale: 'Matias aporta todo el desarrollo técnico, la visión de producto, y los contactos políticos (senadores para DNRPA). Jony aporta la operación comercial y capital inicial. Diego es advisor, no socio (por ahora).',
-    decidedBy: ['matias', 'jony'],
+    id: 'd4', date: '2026-02-26', title: 'Tramicar primero, marketplace después',
+    context: 'Diego propuso visión macro (marketplace de autos tipo OLX como primer paso). Había riesgo de cambiar el scope del MVP.',
+    decision: 'Mantener plan original: Tramicar funcional primero (20 días), marketplace como capa arriba después',
+    alternatives: ['Arrancar directo con marketplace', 'Hacer ambos en paralelo', 'Pivotar a marketplace puro'],
+    rationale: 'El trámite vehicular es el diferencial real. El marketplace es commoditizado (ML, Kavak, OLX ya existen). Primero resolver el dolor (trámite), después capturar tráfico (marketplace). Sin trámite resuelto, no hay ventaja competitiva.',
+    decidedBy: ['matias'],
+    impact: 'alta',
+    category: 'producto',
+  },
+  {
+    id: 'd6', date: '2026-02-26', title: 'Sociedad: definir después, no ahora',
+    context: 'Jony planteó sociedad de 3 en la reunión. Diego no habló de porcentajes.',
+    decision: 'No definir equity todavía. Esperar devolución de Diego vía Jony. Negociar desde mejor posición con producto funcionando.',
+    alternatives: ['Definir 33/33/33 ahora', '60/40 Matias/Jony sin Diego', 'Ofrecer equity a Diego por contactos'],
+    rationale: 'Diego no le interesa meterse por equity chico. Mejor mostrar tracción y que él proponga involucrarse. Matias queda en mejor posición negociadora con producto hecho.',
+    decidedBy: ['matias'],
     impact: 'alta',
     category: 'negocio',
   },
