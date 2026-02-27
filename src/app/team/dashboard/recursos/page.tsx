@@ -18,7 +18,7 @@ export default function RecursosPage() {
   const [form, setForm] = useState({ title: '', url: '', type: 'link' as Resource['type'] })
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true); setResources(getResources()) }, [])
+  useEffect(() => { setMounted(true); getResources().then(setResources) }, [])
   if (!mounted) return null
 
   const addResource = () => {

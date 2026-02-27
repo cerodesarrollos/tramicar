@@ -38,7 +38,7 @@ export default function RiesgosPage() {
 
   useEffect(() => {
     setMounted(true)
-    setRisks(getRisks())
+    getRisks().then(setRisks)
   }, [])
 
   if (!mounted) return null

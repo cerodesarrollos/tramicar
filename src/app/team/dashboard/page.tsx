@@ -2,31 +2,38 @@
 import { useEffect, useState } from 'react'
 import { getUser, getRoadmap, getBlockers, getActivities, getMeetings } from '../store'
 import { TEAM_USERS } from '../data'
-import type { TeamUser } from '../data'
+import type { TeamUser, RoadmapPhase, Blocker, Activity, Meeting } from '../data'
 import { TrendingUp, AlertTriangle, CheckCircle2, Clock, Target, Zap, ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 
 export default function OverviewPage() {
   const [user, setUser] = useState<TeamUser | null>(null)
+  const [roadmap, setRoadmap] = useState<RoadmapPhase[]>([])
+  const [blockers, setBlockers] = useState<Blocker[]>([])
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [meetings, setMeetings] = useState<Meeting[]>([])
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true); setUser(getUser()) }, [])
-  if (!mounted) return null
+  useEffect(() => {
+    setMounted(true)
+    setUser(getUser())
+    async function load() {
+      const [r, b, a, m] = await Promise.all([getRoadmap(), getBlockers(), getActivities(), getMeetings()])
+      setRoadmap(r); setBlockers(b); setActivities(a); setMeetings(m)
+    }
+    load()
+  }, [])
 
-  const roadmap = getRoadmap()
-  const blockers = getBlockers()
-  const activities = getActivities()
-  const meetings = getMeetings()
+  if (!mounted) return null
 
   const totalMilestones = roadmap.reduce((acc, p) => acc + p.milestones.length, 0)
   const doneMilestones = roadmap.reduce((acc, p) => acc + p.milestones.filter(m => m.done).length, 0)
-  const progress = Math.round((doneMilestones / totalMilestones) * 100)
+  const progress = totalMilestones ? Math.round((doneMilestones / totalMilestones) * 100) : 0
   const openBlockers = blockers.filter(b => b.status !== 'resuelta').length
   const highBlockers = blockers.filter(b => b.priority === 'alta' && b.status !== 'resuelta').length
 
   const activePhase = roadmap.find(p => p.status === 'active')
 
-  // Days since Feb 25, 2026 (project start)
   const daysSinceStart = Math.floor((Date.now() - new Date('2026-02-25').getTime()) / 86400000)
 
   const greeting = () => {

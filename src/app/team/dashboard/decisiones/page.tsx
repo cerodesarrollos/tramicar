@@ -25,7 +25,7 @@ export default function DecisionesPage() {
   const [form, setForm] = useState({ title: '', context: '', decision: '', alternatives: '', rationale: '', impact: 'media' as Decision['impact'], category: 'negocio' as Decision['category'] })
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true); setDecisions(getDecisions()) }, [])
+  useEffect(() => { setMounted(true); getDecisions().then(setDecisions) }, [])
   if (!mounted) return null
 
   const toggle = (id: string) => setExpanded(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id])

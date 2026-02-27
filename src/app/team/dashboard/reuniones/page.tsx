@@ -14,9 +14,12 @@ export default function ReunionesPage() {
 
   useEffect(() => {
     setMounted(true)
-    const m = getMeetings()
-    setMeetings(m)
-    if (m[0]) setExpanded([m[0].id])
+    async function load() {
+      const m = await getMeetings()
+      setMeetings(m)
+      if (m[0]) setExpanded([m[0].id])
+    }
+    load()
   }, [])
 
   if (!mounted) return null

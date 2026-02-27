@@ -26,7 +26,7 @@ export default function TrabasPage() {
 
   useEffect(() => {
     setMounted(true)
-    setBlockers(getBlockers())
+    getBlockers().then(setBlockers)
     setForm(f => ({ ...f, assignee: getUser()?.id || 'matias' }))
   }, [])
 

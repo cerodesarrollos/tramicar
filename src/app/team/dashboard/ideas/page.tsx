@@ -18,7 +18,7 @@ export default function IdeasPage() {
   const [form, setForm] = useState({ title: '', description: '' })
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true); setIdeas(getIdeas()) }, [])
+  useEffect(() => { setMounted(true); getIdeas().then(setIdeas) }, [])
   if (!mounted) return null
 
   const addIdea = () => {

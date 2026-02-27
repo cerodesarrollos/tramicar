@@ -12,9 +12,12 @@ export default function RoadmapPage() {
 
   useEffect(() => {
     setMounted(true)
-    const r = getRoadmap()
-    setPhases(r)
-    setExpanded(r.filter(p => p.status === 'active').map(p => p.id))
+    async function load() {
+      const r = await getRoadmap()
+      setPhases(r)
+      setExpanded(r.filter(p => p.status === 'active').map(p => p.id))
+    }
+    load()
   }, [])
 
   if (!mounted) return null

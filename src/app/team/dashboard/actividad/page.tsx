@@ -9,7 +9,7 @@ export default function ActividadPage() {
   const [activities, setActivities] = useState<Activity[]>([])
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => { setMounted(true); setActivities(getActivities()) }, [])
+  useEffect(() => { setMounted(true); getActivities().then(setActivities) }, [])
   if (!mounted) return null
 
   // Group by date
