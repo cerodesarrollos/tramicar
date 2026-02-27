@@ -147,7 +147,7 @@ export default function ReunionesPage() {
               {isOpen && (
                 <div className="px-5 pb-5 pt-0 space-y-3">
                   {meeting.notes && (
-                    <div className="bg-white/[0.02] rounded-xl p-3 text-xs text-gray-300 leading-relaxed">{meeting.notes}</div>
+                    <div className="bg-white/[0.02] rounded-xl p-3 text-xs text-gray-300 leading-relaxed whitespace-pre-line">{meeting.notes}</div>
                   )}
                   {meeting.actionItems.length > 0 && (
                     <div>
