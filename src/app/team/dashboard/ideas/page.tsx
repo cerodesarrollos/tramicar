@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getIdeas, saveIdeas, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Idea } from '../../data'
-import { Lightbulb, Plus, X, GripVertical } from 'lucide-react'
+import { Lightbulb, Plus, X, GripVertical, Pencil, Trash2 } from 'lucide-react'
 
 const COLUMNS: { key: Idea['status']; label: string; color: string }[] = [
   { key: 'nueva', label: '💡 Nueva', color: 'indigo' },
@@ -16,24 +16,39 @@ export default function IdeasPage() {
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ title: '', description: '' })
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => { setMounted(true); getIdeas().then(setIdeas) }, [])
   if (!mounted) return null
 
-  const addIdea = () => {
+  const startEdit = (idea: Idea) => {
+    setForm({ title: idea.title, description: idea.description })
+    setEditingId(idea.id)
+    setShowForm(true)
+  }
+
+  const saveIdea = () => {
     if (!form.title.trim()) return
     const user = getUser()
-    const idea: Idea = {
-      id: `i${Date.now()}`, title: form.title.trim(), description: form.description.trim(),
-      status: 'nueva', author: user?.id || 'unknown', createdAt: new Date().toISOString().split('T')[0],
+    if (editingId) {
+      const updated = ideas.map(i => i.id === editingId ? { ...i, title: form.title.trim(), description: form.description.trim() } : i)
+      setIdeas(updated)
+      saveIdeas(updated)
+      addActivity(user?.id || 'unknown', 'editó idea', form.title.trim())
+    } else {
+      const idea: Idea = {
+        id: `i${Date.now()}`, title: form.title.trim(), description: form.description.trim(),
+        status: 'nueva', author: user?.id || 'unknown', createdAt: new Date().toISOString().split('T')[0],
+      }
+      const updated = [...ideas, idea]
+      setIdeas(updated)
+      saveIdeas(updated)
+      addActivity(user?.id || 'unknown', 'creó idea', form.title.trim())
     }
-    const updated = [...ideas, idea]
-    setIdeas(updated)
-    saveIdeas(updated)
-    addActivity(user?.id || 'unknown', 'creó idea', form.title.trim())
     setForm({ title: '', description: '' })
     setShowForm(false)
+    setEditingId(null)
   }
 
   const moveIdea = (id: string, newStatus: Idea['status']) => {
@@ -61,7 +76,7 @@ export default function IdeasPage() {
           </h1>
           <p className="text-gray-400 text-sm mt-1">Board de ideas del equipo</p>
         </div>
-        <button onClick={() => setShowForm(!showForm)} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
+        <button onClick={() => { setShowForm(!showForm); setEditingId(null); setForm({ title: '', description: '' }) }} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
           <Plus size={16} /> Nueva idea
         </button>
       </div>
@@ -69,13 +84,13 @@ export default function IdeasPage() {
       {showForm && (
         <div className="bg-white/[0.03] border border-indigo-500/20 rounded-2xl p-5 space-y-3">
           <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-            placeholder="Título de la idea" onKeyDown={e => e.key === 'Enter' && !e.shiftKey && addIdea()}
+            placeholder="Título de la idea" onKeyDown={e => e.key === 'Enter' && !e.shiftKey && saveIdea()}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50" />
           <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
             placeholder="Descripción..."
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 h-20 resize-none" />
           <div className="flex gap-2">
-            <button onClick={addIdea} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl">Agregar</button>
+            <button onClick={saveIdea} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl">Agregar</button>
             <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-200 text-sm px-4 py-2">Cancelar</button>
           </div>
         </div>
@@ -98,9 +113,10 @@ export default function IdeasPage() {
                     <div key={idea.id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3.5 hover:border-white/10 transition-all group">
                       <div className="flex items-start justify-between gap-2">
                         <h4 className="text-sm font-medium text-white">{idea.title}</h4>
-                        <button onClick={() => deleteIdea(idea.id)} className="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-                          <X size={14} />
-                        </button>
+                        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                          <button onClick={() => startEdit(idea)} className="text-gray-600 hover:text-indigo-400 p-0.5"><Pencil size={12} /></button>
+                          <button onClick={() => deleteIdea(idea.id)} className="text-gray-600 hover:text-red-400 p-0.5"><Trash2 size={12} /></button>
+                        </div>
                       </div>
                       {idea.description && <p className="text-[11px] text-gray-400 mt-1.5 line-clamp-2">{idea.description}</p>}
                       <div className="flex items-center justify-between mt-3">

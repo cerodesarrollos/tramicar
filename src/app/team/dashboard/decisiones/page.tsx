@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getDecisions, saveDecisions, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Decision } from '../../data'
-import { BookOpen, Plus, ChevronDown, ChevronRight, X, ArrowRight } from 'lucide-react'
+import { BookOpen, Plus, ChevronDown, ChevronRight, X, ArrowRight, Pencil, Trash2 } from 'lucide-react'
 
 const CATEGORY_STYLES: Record<string, { emoji: string; label: string; color: string }> = {
   tech: { emoji: '⚙️', label: 'Tech', color: '#818cf8' },

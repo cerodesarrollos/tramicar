@@ -1,16 +1,37 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { getActivities } from '../../store'
+import { getActivities, saveActivities } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Activity } from '../../data'
-import { Activity as ActivityIcon } from 'lucide-react'
+import { Activity as ActivityIcon, Trash2, Pencil, X, Check } from 'lucide-react'
 
 export default function ActividadPage() {
   const [activities, setActivities] = useState<Activity[]>([])
   const [mounted, setMounted] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState({ action: '', target: '' })
 
   useEffect(() => { setMounted(true); getActivities().then(setActivities) }, [])
   if (!mounted) return null
+
+  const deleteActivity = (id: string) => {
+    const updated = activities.filter(a => a.id !== id)
+    setActivities(updated)
+    saveActivities(updated)
+  }
+
+  const startEdit = (a: Activity) => {
+    setEditingId(a.id)
+    setEditForm({ action: a.action, target: a.target })
+  }
+
+  const saveEdit = () => {
+    if (!editingId) return
+    const updated = activities.map(a => a.id === editingId ? { ...a, action: editForm.action, target: editForm.target } : a)
+    setActivities(updated)
+    saveActivities(updated)
+    setEditingId(null)
+  }
 
   // Group by date
   const grouped: Record<string, Activity[]> = {}
@@ -30,7 +51,6 @@ export default function ActividadPage() {
       </div>
 
       <div className="relative">
-        {/* Timeline line */}
         <div className="absolute left-[15px] top-0 bottom-0 w-px bg-white/10" />
 
         <div className="space-y-8">
@@ -47,18 +67,44 @@ export default function ActividadPage() {
                 {items.map(a => {
                   const u = TEAM_USERS.find(u => u.id === a.user)
                   const time = new Date(a.timestamp).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+                  const isEditing = editingId === a.id
                   return (
                     <div key={a.id} className="flex items-start gap-3 group">
                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0" style={{ background: `${u?.color || '#666'}15` }}>
                         {u?.avatar || '?'}
                       </div>
                       <div className="flex-1 bg-white/[0.02] rounded-xl px-3.5 py-2.5 group-hover:bg-white/[0.04] transition-colors">
-                        <p className="text-xs text-gray-300">
-                          <span className="font-medium text-white">{u?.name}</span>{' '}
-                          <span className="text-gray-400">{a.action}</span>{' '}
-                          <span className="text-indigo-300">{a.target}</span>
-                        </p>
-                        <p className="text-[10px] text-gray-600 mt-0.5">{time}</p>
+                        {isEditing ? (
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                              <span className="font-medium text-white text-xs">{u?.name}</span>
+                              <input value={editForm.action} onChange={e => setEditForm({ ...editForm, action: e.target.value })}
+                                className="bg-white/5 border border-white/10 rounded px-2 py-0.5 text-xs text-gray-300 focus:outline-none focus:border-indigo-500/50 w-24" />
+                              <input value={editForm.target} onChange={e => setEditForm({ ...editForm, target: e.target.value })}
+                                onKeyDown={e => e.key === 'Enter' && saveEdit()}
+                                className="bg-white/5 border border-white/10 rounded px-2 py-0.5 text-xs text-indigo-300 focus:outline-none focus:border-indigo-500/50 flex-1" />
+                            </div>
+                            <div className="flex gap-1">
+                              <button onClick={saveEdit} className="text-emerald-400 hover:text-emerald-300 p-0.5"><Check size={14} /></button>
+                              <button onClick={() => setEditingId(null)} className="text-gray-500 hover:text-gray-300 p-0.5"><X size={14} /></button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-start justify-between">
+                              <p className="text-xs text-gray-300">
+                                <span className="font-medium text-white">{u?.name}</span>{' '}
+                                <span className="text-gray-400">{a.action}</span>{' '}
+                                <span className="text-indigo-300">{a.target}</span>
+                              </p>
+                              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all ml-2 shrink-0">
+                                <button onClick={() => startEdit(a)} className="text-gray-600 hover:text-indigo-400 p-1 rounded hover:bg-white/5 transition-all"><Pencil size={12} /></button>
+                                <button onClick={() => deleteActivity(a.id)} className="text-gray-600 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-all"><Trash2 size={12} /></button>
+                              </div>
+                            </div>
+                            <p className="text-[10px] text-gray-600 mt-0.5">{time}</p>
+                          </>
+                        )}
                       </div>
                     </div>
                   )

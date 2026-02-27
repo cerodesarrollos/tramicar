@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getRisks, saveRisks, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Risk } from '../../data'
-import { Shield, Plus, X, AlertTriangle } from 'lucide-react'
+import { Shield, Plus, X, AlertTriangle, Pencil, Trash2 } from 'lucide-react'
 
 const PROB_LABEL: Record<string, string> = { alta: 'Alta', media: 'Media', baja: 'Baja' }
 const IMPACT_LABEL: Record<string, string> = { crítico: 'Crítico', alto: 'Alto', medio: 'Medio', bajo: 'Bajo' }

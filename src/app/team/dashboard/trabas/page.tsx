@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getBlockers, saveBlockers, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Blocker } from '../../data'
-import { AlertTriangle, Plus, X } from 'lucide-react'
+import { AlertTriangle, Plus, X, Pencil, Trash2 } from 'lucide-react'
 
 const PRIORITY_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   alta: { bg: 'bg-red-500/10 border-red-500/20', text: 'text-red-400', label: '🔴 Alta' },

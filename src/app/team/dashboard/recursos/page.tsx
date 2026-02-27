@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getResources, saveResources, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Resource } from '../../data'
-import { FolderOpen, Plus, ExternalLink, X, Github, FileText, Link2, Wrench } from 'lucide-react'
+import { FolderOpen, Plus, ExternalLink, X, Github, FileText, Link2, Wrench, Pencil, Trash2 } from 'lucide-react'
 
 const TYPE_CONFIG: Record<string, { icon: typeof Github; color: string; label: string }> = {
   repo: { icon: Github, color: '#818cf8', label: 'Repositorio' },
