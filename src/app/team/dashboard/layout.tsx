@@ -6,7 +6,7 @@ import { getUser, logout } from '../store'
 import type { TeamUser } from '../data'
 import {
   LayoutDashboard, Map, Users, Lightbulb, AlertTriangle, FolderOpen, Activity,
-  LogOut, Menu, X, ChevronLeft, BookOpen, Shield
+  LogOut, Menu, X, ChevronLeft, BookOpen, Shield, StickyNote
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -19,6 +19,7 @@ const NAV_ITEMS = [
   { href: '/team/dashboard/trabas', label: 'Trabas', icon: AlertTriangle },
   { href: '/team/dashboard/recursos', label: 'Recursos', icon: FolderOpen },
   { href: '/team/dashboard/actividad', label: 'Actividad', icon: Activity },
+  { href: '/team/dashboard/notepad', label: 'Notepad', icon: StickyNote },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
