@@ -12,6 +12,7 @@ interface Note {
   content: string
   processed: boolean
   processed_result: string | null
+  ai_suggestion: string | null
   created_at: string
 }
 
@@ -46,6 +47,7 @@ export default function NotepadPage() {
       content: text.trim(),
       processed: false,
       processed_result: null,
+      ai_suggestion: null,
       created_at: new Date().toISOString(),
     }
     setNotes([note, ...notes])
@@ -132,8 +134,8 @@ export default function NotepadPage() {
       }
 
       const result = `${ai.summary || `Clasificado como ${category}`} ${details}`
-      await sb.from('notepad').update({ processed: true, processed_result: result }).eq('id', note.id)
-      setNotes(notes.map(n => n.id === note.id ? { ...n, processed: true, processed_result: result } : n))
+      await sb.from('notepad').update({ processed: true, processed_result: result, ai_suggestion: ai.suggestion || null }).eq('id', note.id)
+      setNotes(notes.map(n => n.id === note.id ? { ...n, processed: true, processed_result: result, ai_suggestion: ai.suggestion || null } : n))
       addActivity(note.user_id, 'procesó nota', `${title} ${details}`)
     } catch (e) {
       console.error('processNote error', e)
@@ -238,6 +240,14 @@ function NoteCard({ note, onProcess, onDelete, processing, showAuthor }: {
               </span>
             )}
           </div>
+          {note.processed && note.ai_suggestion && (
+            <div className="mt-2 px-3 py-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg">
+              <p className="text-[10px] text-indigo-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
+                <Sparkles size={10} /> Sugerencia IA
+              </p>
+              <p className="text-xs text-gray-300">{note.ai_suggestion}</p>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all shrink-0">
           {!note.processed && (

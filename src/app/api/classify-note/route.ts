@@ -21,38 +21,50 @@ export async function POST(req: NextRequest) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 800,
         messages: [{
           role: 'user',
-          content: `Sos un clasificador de notas para el dashboard de Tramicar (plataforma de transferencias vehiculares en Argentina).
+          content: `Sos un asistente inteligente para el dashboard de Tramicar (plataforma de transferencias vehiculares en Argentina).
 
-Clasificá esta nota en UNA de estas categorías:
+Un miembro del equipo escribió esta nota rápida. Tu trabajo es:
+1. Clasificar en qué sección del dashboard va
+2. Corregir errores de ortografía y redacción
+3. Darle un título profesional y claro
+4. Escribir una descripción limpia y expandida
+5. Dar una sugerencia útil sobre la idea/nota
+
+CATEGORÍAS:
 - idea: una idea, propuesta, feature, mejora
 - traba: un problema, bloqueo, algo que frena el avance
 - riesgo: algo que podría salir mal, peligro potencial
 - recurso: un link, documento, herramienta, referencia
 - decision: algo que se decidió o definió
-- reunion: notas de una reunión o encuentro
 
-Respondé SOLO con JSON válido, sin markdown ni explicación:
+Respondé SOLO con JSON válido, sin markdown, sin backticks, sin explicación extra:
 {
-  "category": "idea|traba|riesgo|recurso|decision|reunion",
-  "title": "título corto y claro (máx 80 chars)",
-  "description": "descripción limpia de la nota",
+  "category": "idea|traba|riesgo|recurso|decision",
+  "title": "título profesional y claro (máx 80 chars)",
+  "description": "descripción limpia, corregida y expandida de la nota original",
   "priority": "alta|media|baja",
-  "summary": "resumen de 1 línea de lo que se hizo con la nota"
+  "suggestion": "sugerencia concreta de la IA sobre esta nota (próximo paso, consideración, o mejora)",
+  "summary": "frase corta de lo que se hizo: ej 'Idea clasificada como nueva propuesta de escalamiento'"
 }
 
-NOTA: "${content}"`
+NOTA DEL USUARIO: "${content.replace(/"/g, '\\"')}"`
         }],
       }),
     })
 
+    if (!res.ok) {
+      const err = await res.text()
+      console.error('Anthropic error:', err)
+      return NextResponse.json({ error: 'Anthropic API error' }, { status: 500 })
+    }
+
     const data = await res.json()
     const text = data.content?.[0]?.text || ''
     
-    // Parse JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
       return NextResponse.json({ error: 'Could not parse response' }, { status: 500 })
@@ -61,6 +73,7 @@ NOTA: "${content}"`
     const result = JSON.parse(jsonMatch[0])
     return NextResponse.json(result)
   } catch (e: any) {
+    console.error('classify-note error:', e)
     return NextResponse.json({ error: e.message }, { status: 500 })
   }
 }
