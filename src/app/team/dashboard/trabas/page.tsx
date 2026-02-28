@@ -5,16 +5,16 @@ import { TEAM_USERS } from '../../data'
 import type { Blocker } from '../../data'
 import { AlertTriangle, Plus, X, Pencil, Trash2 } from 'lucide-react'
 
-const PRIORITY_STYLES: Record<string, { bg: string; border: string; text: string; label: string; dot: string }> = {
-  alta: { bg: 'bg-red-500/[0.06]', border: 'border-red-500/15', text: 'text-red-400', label: '🔴 Alta', dot: 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]' },
-  media: { bg: 'bg-amber-500/[0.06]', border: 'border-amber-500/15', text: 'text-amber-400', label: '🟡 Media', dot: 'bg-amber-500' },
-  baja: { bg: 'bg-white/[0.02]', border: 'border-white/[0.06]', text: 'text-gray-400', label: '⚪ Baja', dot: 'bg-gray-600' },
+const PRIORITY_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+  alta: { bg: 'bg-red-500/10 border-red-500/20', text: 'text-red-400', label: '🔴 Alta' },
+  media: { bg: 'bg-amber-500/10 border-amber-500/20', text: 'text-amber-400', label: '🟡 Media' },
+  baja: { bg: 'bg-gray-500/10 border-gray-500/20', text: 'text-gray-400', label: '⚪ Baja' },
 }
 
 const STATUS_STYLES: Record<string, { bg: string; label: string }> = {
-  'abierta': { bg: 'bg-red-500/10 text-red-300', label: 'Abierta' },
-  'en-progreso': { bg: 'bg-amber-500/10 text-amber-300', label: 'En progreso' },
-  'resuelta': { bg: 'bg-emerald-500/10 text-emerald-300', label: 'Resuelta' },
+  'abierta': { bg: 'bg-red-500/15 text-red-300', label: 'Abierta' },
+  'en-progreso': { bg: 'bg-amber-500/15 text-amber-300', label: 'En progreso' },
+  'resuelta': { bg: 'bg-emerald-500/15 text-emerald-300', label: 'Resuelta' },
 }
 
 export default function TrabasPage() {
@@ -67,19 +67,16 @@ export default function TrabasPage() {
   const filtered = filter === 'all' ? blockers : blockers.filter(b => b.status === filter)
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white flex items-center gap-3 tracking-tight">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center">
-              <AlertTriangle size={18} className="text-red-400" />
-            </div>
-            Trabas
+          <h1 className="font-display text-2xl font-bold text-white flex items-center gap-2">
+            <AlertTriangle size={22} className="text-red-400" /> Trabas
           </h1>
-          <p className="text-gray-500 text-sm mt-2 ml-12">Blockers y problemas a resolver</p>
+          <p className="text-gray-400 text-sm mt-1">Blockers y problemas a resolver</p>
         </div>
-        <button onClick={() => setShowForm(!showForm)} className="btn-primary flex items-center gap-2">
-          <Plus size={15} /> Reportar
+        <button onClick={() => setShowForm(!showForm)} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
+          <Plus size={16} /> Reportar
         </button>
       </div>
 
@@ -87,33 +84,33 @@ export default function TrabasPage() {
       <div className="flex gap-2">
         {([['all', 'Todas'], ['abierta', 'Abiertas'], ['en-progreso', 'En progreso'], ['resuelta', 'Resueltas']] as const).map(([key, label]) => (
           <button key={key} onClick={() => setFilter(key)}
-            className={`text-[12px] font-medium px-4 py-2 rounded-xl transition-all duration-200 ${filter === key ? 'bg-gradient-to-r from-indigo-500/15 to-violet-500/10 text-indigo-300 border border-indigo-500/20 shadow-[0_0_15px_-5px_rgba(99,102,241,0.2)]' : 'text-gray-500 hover:text-gray-300 bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.08]'}`}>
+            className={`text-xs px-3 py-1.5 rounded-lg transition-all ${filter === key ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20' : 'text-gray-400 hover:text-gray-200 bg-white/[0.02] border border-white/[0.06]'}`}>
             {label}
           </button>
         ))}
       </div>
 
       {showForm && (
-        <div className="glass-card !border-indigo-500/15 rounded-2xl p-6 space-y-3">
+        <div className="bg-white/[0.03] border border-indigo-500/20 rounded-2xl p-5 space-y-3">
           <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
             placeholder="¿Qué está bloqueando?"
-            className="premium-input w-full" />
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50" />
           <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
             placeholder="Detalle..."
-            className="premium-input w-full h-20 resize-none" />
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 h-20 resize-none" />
           <div className="flex gap-3">
             <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value as Blocker['priority'] })}
-              className="premium-input !py-2">
+              className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-300 focus:outline-none">
               <option value="alta">🔴 Alta</option><option value="media">🟡 Media</option><option value="baja">⚪ Baja</option>
             </select>
             <select value={form.assignee} onChange={e => setForm({ ...form, assignee: e.target.value })}
-              className="premium-input !py-2">
+              className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-300 focus:outline-none">
               {TEAM_USERS.map(u => <option key={u.id} value={u.id}>{u.avatar} {u.name}</option>)}
             </select>
           </div>
-          <div className="flex gap-2 pt-1">
-            <button onClick={addBlocker} className="btn-primary">Reportar</button>
-            <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-gray-300 text-sm px-4 py-2 transition-colors">Cancelar</button>
+          <div className="flex gap-2">
+            <button onClick={addBlocker} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl">Reportar</button>
+            <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-200 text-sm px-4 py-2">Cancelar</button>
           </div>
         </div>
       )}
@@ -125,29 +122,28 @@ export default function TrabasPage() {
           const ss = STATUS_STYLES[b.status]
           const assignee = TEAM_USERS.find(u => u.id === b.assignee)
           return (
-            <div key={b.id} className={`${ps.bg} ${ps.border} border rounded-2xl p-5 group transition-all duration-200 hover:border-opacity-100`}>
-              <div className="flex items-start gap-4">
-                <div className={`w-2.5 h-2.5 rounded-full shrink-0 mt-1.5 ${ps.dot}`} />
+            <div key={b.id} className={`${ps.bg} border rounded-2xl p-4 group transition-all`}>
+              <div className="flex items-start gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <h3 className="text-[13px] font-semibold text-white">{b.title}</h3>
-                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-medium ${ss.bg}`}>{ss.label}</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-medium text-white">{b.title}</h3>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${ss.bg}`}>{ss.label}</span>
                   </div>
-                  {b.description && <p className="text-[12px] text-gray-500 mt-2 leading-relaxed">{b.description}</p>}
+                  {b.description && <p className="text-xs text-gray-400 mt-1.5">{b.description}</p>}
                   <div className="flex items-center gap-3 mt-3">
-                    <span className="flex items-center gap-2 text-[11px]" style={{ color: assignee?.color }}>
-                      <span className="w-5 h-5 rounded-lg text-[10px] flex items-center justify-center ring-1 ring-white/[0.04]" style={{ background: `${assignee?.color}15` }}>{assignee?.avatar}</span>
+                    <span className="flex items-center gap-1.5 text-[11px]" style={{ color: assignee?.color }}>
+                      <span className="w-4 h-4 rounded-full text-[9px] flex items-center justify-center" style={{ background: `${assignee?.color}20` }}>{assignee?.avatar}</span>
                       {assignee?.name}
                     </span>
-                    <span className="text-[10px] text-gray-700">{b.createdAt}</span>
+                    <span className="text-[10px] text-gray-600">{b.createdAt}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1 shrink-0">
                   <select value={b.status} onChange={e => updateStatus(b.id, e.target.value as Blocker['status'])}
-                    className="text-[10px] bg-white/[0.03] border border-white/[0.08] rounded-lg px-2.5 py-1.5 text-gray-400 focus:outline-none cursor-pointer hover:border-white/[0.12] transition-all">
+                    className="text-[10px] bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-gray-400 focus:outline-none cursor-pointer">
                     <option value="abierta">Abierta</option><option value="en-progreso">En progreso</option><option value="resuelta">Resuelta</option>
                   </select>
-                  <button onClick={() => deleteBlocker(b.id)} className="text-gray-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1.5 rounded-lg hover:bg-red-500/5">
+                  <button onClick={() => deleteBlocker(b.id)} className="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1">
                     <X size={14} />
                   </button>
                 </div>

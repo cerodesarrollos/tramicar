@@ -45,67 +45,64 @@ export default function RecursosPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white flex items-center gap-3 tracking-tight">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
-              <FolderOpen size={18} className="text-emerald-400" />
-            </div>
-            Recursos
+          <h1 className="font-display text-2xl font-bold text-white flex items-center gap-2">
+            <FolderOpen size={22} className="text-emerald-400" /> Recursos
           </h1>
-          <p className="text-gray-500 text-sm mt-2 ml-12">Links, docs y herramientas del proyecto</p>
+          <p className="text-gray-400 text-sm mt-1">Links, docs y herramientas del proyecto</p>
         </div>
-        <button onClick={() => setShowForm(!showForm)} className="btn-primary flex items-center gap-2">
-          <Plus size={15} /> Agregar
+        <button onClick={() => setShowForm(!showForm)} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
+          <Plus size={16} /> Agregar
         </button>
       </div>
 
       {showForm && (
-        <div className="glass-card !border-indigo-500/15 rounded-2xl p-6 space-y-3">
+        <div className="bg-white/[0.03] border border-indigo-500/20 rounded-2xl p-5 space-y-3">
           <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
             placeholder="Nombre del recurso"
-            className="premium-input w-full" />
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50" />
           <input value={form.url} onChange={e => setForm({ ...form, url: e.target.value })}
             placeholder="URL"
-            className="premium-input w-full" />
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50" />
           <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as Resource['type'] })}
-            className="premium-input !py-2">
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-300 focus:outline-none">
             <option value="repo">📦 Repositorio</option><option value="doc">📄 Documento</option>
             <option value="link">🔗 Link</option><option value="tool">🔧 Herramienta</option>
           </select>
-          <div className="flex gap-2 pt-1">
-            <button onClick={addResource} className="btn-primary">Agregar</button>
-            <button onClick={() => setShowForm(false)} className="text-gray-500 hover:text-gray-300 text-sm px-4 py-2 transition-colors">Cancelar</button>
+          <div className="flex gap-2">
+            <button onClick={addResource} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl">Agregar</button>
+            <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-200 text-sm px-4 py-2">Cancelar</button>
           </div>
         </div>
       )}
 
       {/* Resources grid */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-3">
         {resources.map(r => {
           const config = TYPE_CONFIG[r.type]
           const Icon = config.icon
           const addedBy = TEAM_USERS.find(u => u.id === r.addedBy)
           return (
-            <div key={r.id} className="glass-card rounded-2xl p-5 group">
-              <div className="flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ring-1 ring-white/[0.04]" style={{ background: `${config.color}10` }}>
+            <div key={r.id} className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 hover:border-white/10 transition-all group">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${config.color}15` }}>
                   <Icon size={18} style={{ color: config.color }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-[13px] font-semibold text-white truncate">{r.title}</h3>
-                  <p className="text-[11px] text-gray-600 mt-1 truncate">{r.url}</p>
-                  <div className="flex items-center gap-2.5 mt-3">
-                    <span className="text-[10px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: `${config.color}10`, color: config.color }}>{config.label}</span>
-                    <span className="text-[10px] text-gray-700">por {addedBy?.name} · {r.addedAt}</span>
+                  <h3 className="text-sm font-medium text-white truncate">{r.title}</h3>
+                  <p className="text-[11px] text-gray-500 mt-0.5 truncate">{r.url}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: `${config.color}15`, color: config.color }}>{config.label}</span>
+                    <span className="text-[10px] text-gray-600">por {addedBy?.name} · {r.addedAt}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <a href={r.url} target="_blank" rel="noopener" className="text-gray-600 hover:text-indigo-400 p-1.5 rounded-lg hover:bg-indigo-500/5 transition-all">
+                  <a href={r.url} target="_blank" rel="noopener" className="text-gray-500 hover:text-indigo-400 p-1 transition-colors">
                     <ExternalLink size={14} />
                   </a>
-                  <button onClick={() => deleteResource(r.id)} className="text-gray-700 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1.5 rounded-lg hover:bg-red-500/5">
+                  <button onClick={() => deleteResource(r.id)} className="text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1">
                     <X size={14} />
                   </button>
                 </div>
