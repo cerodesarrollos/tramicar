@@ -147,31 +147,31 @@ export default function NotepadPage() {
   const otherNotes = notes.filter(n => n.user_id !== user?.id)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-bold text-white flex items-center gap-2">
-          <StickyNote size={22} className="text-yellow-400" /> Notepad
+        <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <StickyNote size={24} className="text-yellow-500" /> Notepad
         </h1>
-        <p className="text-gray-400 text-sm mt-1">Escribí lo que se te ocurra. Después lo ordenamos al dashboard.</p>
+        <p className="text-gray-500 text-sm mt-1.5">Escribí lo que se te ocurra. Después lo ordenamos al dashboard.</p>
       </div>
 
       {/* Input */}
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4">
+      <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
         <textarea
           ref={textareaRef}
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) addNote() }}
           placeholder="Tirá una idea, anotá algo, lo que sea..."
-          className="w-full bg-transparent text-white text-sm placeholder:text-gray-600 focus:outline-none resize-none min-h-[80px]"
+          className="w-full bg-transparent text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none resize-none min-h-[80px]"
           autoFocus
         />
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04]">
-          <span className="text-[10px] text-gray-600">⌘ + Enter para enviar</span>
+        <div className="flex items-center justify-between mt-2 pt-3 border-t border-gray-100">
+          <span className="text-[10px] text-gray-400">⌘ + Enter para enviar</span>
           <button
             onClick={addNote}
             disabled={!text.trim()}
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition-colors"
+            className="dash-btn-primary disabled:opacity-30 disabled:cursor-not-allowed text-xs"
           >
             <Send size={13} /> Guardar
           </button>
@@ -181,8 +181,8 @@ export default function NotepadPage() {
       {/* My Notes */}
       {myNotes.length > 0 && (
         <div>
-          <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-3">Mis notas</h3>
-          <div className="space-y-2">
+          <h3 className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Mis notas</h3>
+          <div className="space-y-2.5">
             {myNotes.map(note => (
               <NoteCard key={note.id} note={note} onProcess={processNote} onDelete={deleteNote} processing={processing} />
             ))}
@@ -193,8 +193,8 @@ export default function NotepadPage() {
       {/* Other Notes */}
       {otherNotes.length > 0 && (
         <div>
-          <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-3">Notas del equipo</h3>
-          <div className="space-y-2">
+          <h3 className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Notas del equipo</h3>
+          <div className="space-y-2.5">
             {otherNotes.map(note => (
               <NoteCard key={note.id} note={note} onProcess={processNote} onDelete={deleteNote} processing={processing} showAuthor />
             ))}
@@ -204,8 +204,8 @@ export default function NotepadPage() {
 
       {notes.length === 0 && (
         <div className="text-center py-12">
-          <StickyNote size={32} className="text-gray-700 mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Todavía no hay notas. ¡Arrancá!</p>
+          <StickyNote size={32} className="text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-400 text-sm">Todavía no hay notas. ¡Arrancá!</p>
         </div>
       )}
     </div>
@@ -220,32 +220,32 @@ function NoteCard({ note, onProcess, onDelete, processing, showAuthor }: {
   const time = new Date(note.created_at).toLocaleString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className={`bg-white/[0.03] border rounded-xl p-4 transition-all group ${note.processed ? 'border-emerald-500/10' : 'border-white/[0.06] hover:border-white/10'}`}>
+    <div className={`bg-white border rounded-xl p-4 transition-all group shadow-sm ${note.processed ? 'border-emerald-200' : 'border-gray-100 hover:shadow-md hover:-translate-y-[1px]'}`}>
       <div className="flex items-start gap-3">
         {showAuthor && (
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0" style={{ background: `${author?.color || '#666'}15` }}>
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0" style={{ background: `${author?.color || '#666'}12` }}>
             {author?.avatar || '?'}
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-200 whitespace-pre-wrap">{note.content}</p>
+          <p className="text-sm text-gray-700 whitespace-pre-wrap">{note.content}</p>
           <div className="flex items-center gap-3 mt-2">
-            <span className="text-[10px] text-gray-600 flex items-center gap-1">
+            <span className="text-[10px] text-gray-400 flex items-center gap-1">
               <Clock size={10} /> {time}
             </span>
-            {showAuthor && <span className="text-[10px] text-gray-600">{author?.name}</span>}
+            {showAuthor && <span className="text-[10px] text-gray-400">{author?.name}</span>}
             {note.processed && note.processed_result && (
-              <span className="text-[10px] text-emerald-400 flex items-center gap-1">
+              <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-medium">
                 <CheckCircle2 size={10} /> {note.processed_result}
               </span>
             )}
           </div>
           {note.processed && note.ai_suggestion && (
-            <div className="mt-2 px-3 py-2 bg-indigo-500/5 border border-indigo-500/10 rounded-lg">
-              <p className="text-[10px] text-indigo-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
+            <div className="mt-2 px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-lg">
+              <p className="text-[10px] text-indigo-600 uppercase tracking-wider mb-0.5 flex items-center gap-1 font-semibold">
                 <Sparkles size={10} /> Sugerencia IA
               </p>
-              <p className="text-xs text-gray-300">{note.ai_suggestion}</p>
+              <p className="text-xs text-gray-600">{note.ai_suggestion}</p>
             </div>
           )}
         </div>
@@ -254,7 +254,7 @@ function NoteCard({ note, onProcess, onDelete, processing, showAuthor }: {
             <button
               onClick={() => onProcess(note)}
               disabled={isProcessing}
-              className="text-gray-500 hover:text-yellow-400 p-1.5 rounded-lg hover:bg-white/5 transition-all disabled:opacity-50"
+              className="text-gray-400 hover:text-yellow-500 p-1.5 rounded-lg hover:bg-gray-50 transition-all disabled:opacity-50"
               title="Ordenar e integrar al dashboard"
             >
               {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
@@ -262,7 +262,7 @@ function NoteCard({ note, onProcess, onDelete, processing, showAuthor }: {
           )}
           <button
             onClick={() => onDelete(note.id)}
-            className="text-gray-600 hover:text-red-400 p-1.5 rounded-lg hover:bg-white/5 transition-all"
+            className="text-gray-300 hover:text-red-500 p-1.5 rounded-lg hover:bg-gray-50 transition-all"
           >
             <Trash2 size={14} />
           </button>

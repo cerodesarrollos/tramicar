@@ -5,11 +5,11 @@ import { TEAM_USERS } from '../../data'
 import type { Idea } from '../../data'
 import { Lightbulb, Plus, X, GripVertical, Pencil, Trash2 } from 'lucide-react'
 
-const COLUMNS: { key: Idea['status']; label: string; color: string }[] = [
-  { key: 'nueva', label: '💡 Nueva', color: 'indigo' },
-  { key: 'evaluando', label: '🔍 Evaluando', color: 'amber' },
-  { key: 'aprobada', label: '✅ Aprobada', color: 'emerald' },
-  { key: 'descartada', label: '❌ Descartada', color: 'gray' },
+const COLUMNS: { key: Idea['status']; label: string; color: string; bg: string }[] = [
+  { key: 'nueva', label: '💡 Nueva', color: '#4338ca', bg: '#eef2ff' },
+  { key: 'evaluando', label: '🔍 Evaluando', color: '#d97706', bg: '#fffbeb' },
+  { key: 'aprobada', label: '✅ Aprobada', color: '#16a34a', bg: '#f0fdf4' },
+  { key: 'descartada', label: '❌ Descartada', color: '#6b7280', bg: '#f9fafb' },
 ]
 
 export default function IdeasPage() {
@@ -68,67 +68,67 @@ export default function IdeasPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white flex items-center gap-2">
-            <Lightbulb size={22} className="text-amber-400" /> Ideas
+          <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <Lightbulb size={24} className="text-amber-500" /> Ideas
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Board de ideas del equipo</p>
+          <p className="text-gray-500 text-sm mt-1.5">Board de ideas del equipo</p>
         </div>
-        <button onClick={() => { setShowForm(!showForm); setEditingId(null); setForm({ title: '', description: '' }) }} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl flex items-center gap-2 transition-colors">
+        <button onClick={() => { setShowForm(!showForm); setEditingId(null); setForm({ title: '', description: '' }) }} className="dash-btn-primary">
           <Plus size={16} /> Nueva idea
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-white/[0.03] border border-indigo-500/20 rounded-2xl p-5 space-y-3">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-3 shadow-sm">
           <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
             placeholder="Título de la idea" onKeyDown={e => e.key === 'Enter' && !e.shiftKey && saveIdea()}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50" />
+            className="dash-input" />
           <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
             placeholder="Descripción..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50 h-20 resize-none" />
-          <div className="flex gap-2">
-            <button onClick={saveIdea} className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-4 py-2 rounded-xl">Agregar</button>
-            <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-200 text-sm px-4 py-2">Cancelar</button>
+            className="dash-textarea h-20" />
+          <div className="flex gap-2 pt-1">
+            <button onClick={saveIdea} className="dash-btn-primary">Agregar</button>
+            <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
           </div>
         </div>
       )}
 
       {/* Kanban - scrollable on mobile */}
-      <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+      <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
         {COLUMNS.map(col => {
           const colIdeas = ideas.filter(i => i.status === col.key)
           return (
             <div key={col.key} className="min-w-[260px] flex-1">
               <div className="flex items-center gap-2 mb-3 px-1">
-                <span className="text-sm font-medium text-gray-300">{col.label}</span>
-                <span className="text-[10px] bg-white/5 text-gray-500 px-2 py-0.5 rounded-full">{colIdeas.length}</span>
+                <span className="text-sm font-semibold text-gray-700">{col.label}</span>
+                <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{colIdeas.length}</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {colIdeas.map(idea => {
                   const author = TEAM_USERS.find(u => u.id === idea.author)
                   return (
-                    <div key={idea.id} className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3.5 hover:border-white/10 transition-all group">
+                    <div key={idea.id} className="bg-white border border-gray-100 rounded-xl p-3.5 shadow-sm hover:shadow-md hover:-translate-y-[1px] transition-all group">
                       <div className="flex items-start justify-between gap-2">
-                        <h4 className="text-sm font-medium text-white">{idea.title}</h4>
+                        <h4 className="text-sm font-semibold text-gray-900">{idea.title}</h4>
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-                          <button onClick={() => startEdit(idea)} className="text-gray-600 hover:text-indigo-400 p-0.5"><Pencil size={12} /></button>
-                          <button onClick={() => deleteIdea(idea.id)} className="text-gray-600 hover:text-red-400 p-0.5"><Trash2 size={12} /></button>
+                          <button onClick={() => startEdit(idea)} className="text-gray-300 hover:text-indigo-500 p-0.5"><Pencil size={12} /></button>
+                          <button onClick={() => deleteIdea(idea.id)} className="text-gray-300 hover:text-red-500 p-0.5"><Trash2 size={12} /></button>
                         </div>
                       </div>
-                      {idea.description && <p className="text-[11px] text-gray-400 mt-1.5 line-clamp-2">{idea.description}</p>}
+                      {idea.description && <p className="text-[11px] text-gray-500 mt-1.5 line-clamp-2">{idea.description}</p>}
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center gap-1.5">
-                          <span className="w-5 h-5 rounded-full text-[10px] flex items-center justify-center" style={{ background: `${author?.color || '#666'}20` }}>{author?.avatar}</span>
-                          <span className="text-[10px] text-gray-500">{idea.createdAt}</span>
+                          <span className="w-5 h-5 rounded-full text-[10px] flex items-center justify-center" style={{ background: `${author?.color || '#666'}15` }}>{author?.avatar}</span>
+                          <span className="text-[10px] text-gray-400">{idea.createdAt}</span>
                         </div>
                         {/* Move buttons */}
                         <select
                           value={idea.status}
                           onChange={e => moveIdea(idea.id, e.target.value as Idea['status'])}
-                          className="text-[10px] bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-gray-400 focus:outline-none cursor-pointer"
+                          className="text-[10px] bg-white border border-gray-200 rounded-lg px-2 py-1 text-gray-500 focus:outline-none cursor-pointer"
                         >
                           {COLUMNS.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
                         </select>

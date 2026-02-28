@@ -52,24 +52,24 @@ export default function RoadmapPage() {
   }
 
   const statusColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-    done: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400', dot: 'bg-emerald-500' },
-    active: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/20', text: 'text-indigo-300', dot: 'bg-indigo-500' },
-    upcoming: { bg: 'bg-white/[0.02]', border: 'border-white/[0.06]', text: 'text-gray-400', dot: 'bg-gray-500' },
+    done: { bg: 'bg-emerald-50', border: 'border-emerald-200/60', text: 'text-emerald-700', dot: 'bg-emerald-500' },
+    active: { bg: 'bg-indigo-50', border: 'border-indigo-200/60', text: 'text-indigo-700', dot: 'bg-indigo-500' },
+    upcoming: { bg: 'bg-white', border: 'border-gray-200/80', text: 'text-gray-500', dot: 'bg-gray-300' },
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl font-bold text-white flex items-center gap-2">
-          <Milestone size={22} className="text-indigo-400" /> Roadmap
+        <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
+          <Milestone size={24} className="text-indigo-600" /> Roadmap
         </h1>
-        <p className="text-gray-400 text-sm mt-1">De MVP a escala nacional</p>
+        <p className="text-gray-500 text-sm mt-1.5">De MVP a escala nacional</p>
       </div>
 
       {/* Timeline */}
       <div className="relative">
         {/* Vertical line */}
-        <div className="absolute left-[19px] top-4 bottom-4 w-px bg-white/10" />
+        <div className="absolute left-[19px] top-4 bottom-4 w-px bg-gray-200" />
 
         <div className="space-y-4">
           {phases.map((phase) => {
@@ -80,9 +80,9 @@ export default function RoadmapPage() {
             const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0
 
             return (
-              <div key={phase.id} className={`relative ${colors.bg} ${colors.border} border rounded-2xl overflow-hidden`}>
+              <div key={phase.id} className={`relative ${colors.bg} ${colors.border} border rounded-2xl overflow-hidden shadow-sm`}>
                 {/* Dot on timeline */}
-                <div className={`absolute left-[15px] top-6 w-[10px] h-[10px] rounded-full ${colors.dot} ring-2 ring-[#0a0a0f] z-10`} />
+                <div className={`absolute left-[15px] top-6 w-[10px] h-[10px] rounded-full ${colors.dot} ring-2 ring-white z-10`} />
 
                 {/* Header */}
                 <button onClick={() => toggleExpand(phase.id)} className="w-full text-left px-5 py-4 pl-10 flex items-center gap-3">
@@ -90,19 +90,21 @@ export default function RoadmapPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className={`font-display font-bold ${colors.text}`}>{phase.name}</h3>
-                      <span className="text-[10px] text-gray-500 uppercase">{phase.status === 'active' ? '● EN CURSO' : phase.status === 'done' ? '✓ COMPLETO' : 'PRÓXIMO'}</span>
+                      <span className={`text-[10px] uppercase font-medium ${phase.status === 'active' ? 'text-indigo-500' : phase.status === 'done' ? 'text-emerald-500' : 'text-gray-400'}`}>
+                        {phase.status === 'active' ? '● EN CURSO' : phase.status === 'done' ? '✓ COMPLETO' : 'PRÓXIMO'}
+                      </span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{phase.period}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{phase.period}</p>
                   </div>
                   <div className="text-right">
                     <p className={`text-sm font-mono font-bold ${colors.text}`}>{pct}%</p>
-                    <p className="text-[10px] text-gray-500">{doneCount}/{totalCount}</p>
+                    <p className="text-[10px] text-gray-400">{doneCount}/{totalCount}</p>
                   </div>
                 </button>
 
                 {/* Progress bar */}
-                <div className="mx-5 mb-1 h-1 bg-white/5 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: phase.status === 'done' ? '#10b981' : '#6366f1' }} />
+                <div className="mx-5 mb-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: phase.status === 'done' ? '#16a34a' : '#4338ca' }} />
                 </div>
 
                 {/* Milestones */}
@@ -115,11 +117,11 @@ export default function RoadmapPage() {
                         className="w-full flex items-center gap-3 text-left group py-1"
                       >
                         {m.done ? (
-                          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                          <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
                         ) : (
-                          <Circle size={16} className="text-gray-600 group-hover:text-indigo-400 shrink-0 transition-colors" />
+                          <Circle size={16} className="text-gray-300 group-hover:text-indigo-500 shrink-0 transition-colors" />
                         )}
-                        <span className={`text-sm ${m.done ? 'text-gray-500 line-through' : 'text-gray-300'}`}>{m.text}</span>
+                        <span className={`text-sm ${m.done ? 'text-gray-400 line-through' : 'text-gray-700'}`}>{m.text}</span>
                       </button>
                     ))}
 
@@ -132,15 +134,15 @@ export default function RoadmapPage() {
                           onChange={e => setNewMilestone({ ...newMilestone, text: e.target.value })}
                           onKeyDown={e => e.key === 'Enter' && addMilestoneToPhase()}
                           placeholder="Nuevo milestone..."
-                          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500/50"
+                          className="dash-input"
                         />
-                        <button onClick={addMilestoneToPhase} className="text-indigo-400 hover:text-indigo-300"><CheckCircle2 size={18} /></button>
-                        <button onClick={() => setNewMilestone(null)} className="text-gray-500 hover:text-gray-300"><X size={18} /></button>
+                        <button onClick={addMilestoneToPhase} className="text-indigo-600 hover:text-indigo-700"><CheckCircle2 size={18} /></button>
+                        <button onClick={() => setNewMilestone(null)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
                       </div>
                     ) : (
                       <button
                         onClick={() => setNewMilestone({ phaseId: phase.id, text: '' })}
-                        className="flex items-center gap-2 text-xs text-gray-500 hover:text-indigo-400 transition-colors mt-1"
+                        className="flex items-center gap-2 text-xs text-gray-400 hover:text-indigo-600 transition-colors mt-1"
                       >
                         <Plus size={14} /> Agregar milestone
                       </button>

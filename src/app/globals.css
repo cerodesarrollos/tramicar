@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #f5f5f7;
+  --color-bg: #f5f7fa;
   --color-surface: #ffffff;
-  --color-surface2: #f0f0f5;
-  --color-surface3: #e8e8f0;
+  --color-surface2: #f0f2f5;
+  --color-surface3: #e8eaef;
   --color-primary: #4338ca;
   --color-primary2: #5b4fdb;
   --color-primary-light: #eef2ff;
@@ -35,15 +35,36 @@ body {
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.14); }
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(67,56,202,0.2); }
-  50% { box-shadow: 0 0 0 10px rgba(67,56,202,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(67,56,202,0.15); }
+  50% { box-shadow: 0 0 0 8px rgba(67,56,202,0); }
 }
 .animate-slide-up { animation: slideUp 0.5s ease forwards; }
 .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+
+/* Dashboard light theme form controls */
+.dash-input {
+  @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 transition-all;
+}
+.dash-textarea {
+  @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 resize-none transition-all;
+}
+.dash-select {
+  @apply bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 cursor-pointer transition-all;
+}
+.dash-btn-primary {
+  @apply bg-gray-900 hover:bg-gray-800 text-white text-sm px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all font-medium shadow-sm;
+}
+.dash-btn-secondary {
+  @apply text-gray-500 hover:text-gray-700 text-sm px-4 py-2 transition-colors;
+}
+.dash-card {
+  @apply bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-[1px] transition-all;
+}
