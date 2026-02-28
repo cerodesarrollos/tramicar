@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react'
 import { getResources, saveResources, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Resource } from '../../data'
-import { FolderOpen, Plus, ExternalLink, X, Github, FileText, Link2, Wrench, Pencil, Trash2 } from 'lucide-react'
+import { FolderOpen, Plus, ExternalLink, X, Github, FileText, Link2, Wrench } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const fadeIn = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } }
+const stagger = { animate: { transition: { staggerChildren: 0.06 } } }
 
 const TYPE_CONFIG: Record<string, { icon: typeof Github; color: string; bg: string; label: string }> = {
   repo: { icon: Github, color: '#4338ca', bg: '#eef2ff', label: 'Repositorio' },
@@ -45,47 +49,65 @@ export default function RecursosPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <motion.div className="space-y-8" initial="initial" animate="animate" variants={stagger}>
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <FolderOpen size={24} className="text-emerald-500" /> Recursos
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <FolderOpen size={20} className="text-emerald-500" />
+            </div>
+            Recursos
           </h1>
           <p className="text-gray-500 text-sm mt-1.5">Links, docs y herramientas del proyecto</p>
         </div>
         <button onClick={() => setShowForm(!showForm)} className="dash-btn-primary">
           <Plus size={16} /> Agregar
         </button>
-      </div>
+      </motion.div>
 
-      {showForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-3 shadow-sm">
-          <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-            placeholder="Nombre del recurso"
-            className="dash-input" />
-          <input value={form.url} onChange={e => setForm({ ...form, url: e.target.value })}
-            placeholder="URL"
-            className="dash-input" />
-          <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as Resource['type'] })}
-            className="dash-select">
-            <option value="repo">📦 Repositorio</option><option value="doc">📄 Documento</option>
-            <option value="link">🔗 Link</option><option value="tool">🔧 Herramienta</option>
-          </select>
-          <div className="flex gap-2 pt-1">
-            <button onClick={addResource} className="dash-btn-primary">Agregar</button>
-            <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-3 shadow-sm">
+              <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                placeholder="Nombre del recurso"
+                className="dash-input" />
+              <input value={form.url} onChange={e => setForm({ ...form, url: e.target.value })}
+                placeholder="URL"
+                className="dash-input" />
+              <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as Resource['type'] })}
+                className="dash-select">
+                <option value="repo">📦 Repositorio</option><option value="doc">📄 Documento</option>
+                <option value="link">🔗 Link</option><option value="tool">🔧 Herramienta</option>
+              </select>
+              <div className="flex gap-2 pt-1">
+                <button onClick={addResource} className="dash-btn-primary">Agregar</button>
+                <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Resources grid */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {resources.map(r => {
+      <motion.div className="grid md:grid-cols-2 gap-4" variants={stagger}>
+        {resources.map((r, i) => {
           const config = TYPE_CONFIG[r.type]
           const Icon = config.icon
           const addedBy = TEAM_USERS.find(u => u.id === r.addedBy)
           return (
-            <div key={r.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-[1px] transition-all group">
+            <motion.div
+              key={r.id}
+              variants={fadeIn}
+              transition={{ duration: 0.3 }}
+              whileHover={{ y: -2, boxShadow: '0 8px 25px -5px rgba(0,0,0,0.08)' }}
+              className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm transition-shadow group"
+            >
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: config.bg }}>
                   <Icon size={18} style={{ color: config.color }} />
@@ -107,10 +129,19 @@ export default function RecursosPage() {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )
         })}
-      </div>
-    </div>
+      </motion.div>
+
+      {resources.length === 0 && (
+        <motion.div variants={fadeIn} className="text-center py-16">
+          <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FolderOpen size={28} className="text-emerald-300" />
+          </div>
+          <p className="text-gray-400 text-sm">Sin recursos todavía. Agregá links, repos y docs.</p>
+        </motion.div>
+      )}
+    </motion.div>
   )
 }

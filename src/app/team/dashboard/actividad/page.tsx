@@ -4,6 +4,10 @@ import { getActivities, saveActivities } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Activity } from '../../data'
 import { Activity as ActivityIcon, Trash2, Pencil, X, Check } from 'lucide-react'
+import { motion } from 'framer-motion'
+
+const fadeIn = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } }
+const stagger = { animate: { transition: { staggerChildren: 0.08 } } }
 
 export default function ActividadPage() {
   const [activities, setActivities] = useState<Activity[]>([])
@@ -42,20 +46,23 @@ export default function ActividadPage() {
   })
 
   return (
-    <div className="space-y-8">
-      <div>
+    <motion.div className="space-y-8" initial="initial" animate="animate" variants={stagger}>
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }}>
         <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <ActivityIcon size={24} className="text-indigo-600" /> Actividad
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+            <ActivityIcon size={20} className="text-indigo-600" />
+          </div>
+          Actividad
         </h1>
         <p className="text-gray-500 text-sm mt-1.5">Timeline de todo lo que pasa en el equipo</p>
-      </div>
+      </motion.div>
 
       <div className="relative">
         <div className="absolute left-[15px] top-0 bottom-0 w-px bg-gray-200" />
 
-        <div className="space-y-8">
-          {Object.entries(grouped).map(([date, items]) => (
-            <div key={date}>
+        <motion.div className="space-y-8" variants={stagger}>
+          {Object.entries(grouped).map(([date, items], groupIdx) => (
+            <motion.div key={date} variants={fadeIn} transition={{ duration: 0.4 }}>
               <div className="relative flex items-center gap-3 mb-4">
                 <div className="w-[31px] h-[31px] bg-white border-2 border-indigo-200 rounded-full flex items-center justify-center z-10">
                   <div className="w-2 h-2 bg-indigo-500 rounded-full" />
@@ -64,16 +71,22 @@ export default function ActividadPage() {
               </div>
 
               <div className="ml-[31px] pl-6 space-y-3">
-                {items.map(a => {
+                {items.map((a, i) => {
                   const u = TEAM_USERS.find(u => u.id === a.user)
                   const time = new Date(a.timestamp).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
                   const isEditing = editingId === a.id
                   return (
-                    <div key={a.id} className="flex items-start gap-3 group">
+                    <motion.div
+                      key={a.id}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      className="flex items-start gap-3 group"
+                    >
                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0" style={{ background: `${u?.color || '#666'}12` }}>
                         {u?.avatar || '?'}
                       </div>
-                      <div className="flex-1 bg-white rounded-xl px-3.5 py-2.5 shadow-sm border border-gray-100 group-hover:shadow-md transition-all">
+                      <div className="flex-1 bg-white rounded-xl px-3.5 py-2.5 shadow-sm border border-gray-100 group-hover:shadow-md transition-shadow">
                         {isEditing ? (
                           <div className="flex flex-col gap-2">
                             <div className="flex gap-2">
@@ -106,20 +119,23 @@ export default function ActividadPage() {
                           </>
                         )}
                       </div>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {activities.length === 0 && (
-        <div className="text-center py-12">
+        <motion.div variants={fadeIn} className="text-center py-16">
+          <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <ActivityIcon size={28} className="text-indigo-300" />
+          </div>
           <p className="text-gray-400 text-sm">Sin actividad registrada todavía</p>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }

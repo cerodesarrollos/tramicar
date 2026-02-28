@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react'
 import { getRisks, saveRisks, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Risk } from '../../data'
-import { Shield, Plus, X, AlertTriangle, Pencil, Trash2 } from 'lucide-react'
+import { Shield, Plus, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const fadeIn = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } }
+const stagger = { animate: { transition: { staggerChildren: 0.06 } } }
 
 const PROB_LABEL: Record<string, string> = { alta: 'Alta', media: 'Media', baja: 'Baja' }
 const IMPACT_LABEL: Record<string, string> = { crítico: 'Crítico', alto: 'Alto', medio: 'Medio', bajo: 'Bajo' }
@@ -82,37 +86,38 @@ export default function RiesgosPage() {
   const highCount = activeRisks.filter(r => { const s = riskScore(r.probability, r.impact).score; return s >= 6 && s < 9 }).length
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <motion.div className="space-y-8" initial="initial" animate="animate" variants={stagger}>
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Shield size={24} className="text-amber-500" /> Risk Register
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+              <Shield size={20} className="text-amber-500" />
+            </div>
+            Risk Register
           </h1>
           <p className="text-gray-500 text-sm mt-1.5">Riesgos identificados y estrategias de mitigación</p>
         </div>
         <button onClick={() => setShowForm(!showForm)} className="dash-btn-primary">
           <Plus size={16} /> Identificar
         </button>
-      </div>
+      </motion.div>
 
       {/* Risk summary */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 text-center shadow-sm">
-          <p className="font-display text-2xl font-bold text-gray-900">{activeRisks.length}</p>
-          <p className="text-[11px] text-gray-400 font-medium mt-1">Riesgos activos</p>
-        </div>
-        <div className="bg-red-50 border border-red-100 rounded-2xl p-5 text-center shadow-sm">
-          <p className="font-display text-2xl font-bold text-red-600">{criticalCount}</p>
-          <p className="text-[11px] text-gray-400 font-medium mt-1">Críticos</p>
-        </div>
-        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 text-center shadow-sm">
-          <p className="font-display text-2xl font-bold text-amber-600">{highCount}</p>
-          <p className="text-[11px] text-gray-400 font-medium mt-1">Altos</p>
-        </div>
-      </div>
+      <motion.div className="grid grid-cols-3 gap-4" variants={stagger}>
+        {[
+          { label: 'Riesgos activos', value: activeRisks.length, color: 'text-gray-900', bg: 'bg-white border-gray-100' },
+          { label: 'Críticos', value: criticalCount, color: 'text-red-600', bg: 'bg-red-50 border-red-100' },
+          { label: 'Altos', value: highCount, color: 'text-amber-600', bg: 'bg-amber-50 border-amber-100' },
+        ].map(stat => (
+          <motion.div key={stat.label} variants={fadeIn} transition={{ duration: 0.3 }} className={`${stat.bg} border rounded-xl p-5 text-center shadow-sm`}>
+            <p className={`font-display text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+            <p className="text-[11px] text-gray-400 font-medium mt-1">{stat.label}</p>
+          </motion.div>
+        ))}
+      </motion.div>
 
       {/* Matrix hint */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
         <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-3 font-semibold">Matriz Probabilidad × Impacto</p>
         <div className="grid grid-cols-4 gap-1.5 max-w-md">
           {['bajo', 'medio', 'alto', 'crítico'].map(impact => (
@@ -120,7 +125,7 @@ export default function RiesgosPage() {
               const rs = riskScore(prob, impact)
               const count = activeRisks.filter(r => r.probability === prob && r.impact === impact).length
               return (
-                <div key={`${prob}-${impact}`} className="h-8 rounded-lg flex items-center justify-center text-[10px] font-mono font-medium" style={{ background: rs.bg, color: rs.color }}>
+                <div key={`${prob}-${impact}`} className="h-8 rounded-lg flex items-center justify-center text-[10px] font-mono font-medium transition-all hover:scale-105" style={{ background: rs.bg, color: rs.color }}>
                   {count > 0 ? count : ''}
                 </div>
               )
@@ -131,58 +136,73 @@ export default function RiesgosPage() {
           <span className="text-[9px] text-gray-400">← Impacto</span>
           <span className="text-[9px] text-gray-400">↑ Probabilidad</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Filter */}
-      <div className="flex gap-2">
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="flex gap-2">
         {([['all', 'Todos'], ['activo', 'Activos'], ['mitigado', 'Mitigados'], ['materializado', 'Materializados']] as const).map(([key, label]) => (
           <button key={key} onClick={() => setFilter(key)}
-            className={`text-xs px-4 py-2 rounded-full transition-all font-medium ${filter === key ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 bg-white border border-gray-200 hover:border-gray-300'}`}>
+            className={`text-xs px-4 py-2 rounded-full transition-all duration-200 font-medium ${filter === key ? 'bg-gray-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 bg-white border border-gray-200 hover:border-gray-300'}`}>
             {label}
           </button>
         ))}
-      </div>
+      </motion.div>
 
-      {showForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-3 shadow-sm">
-          <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-            placeholder="¿Qué podría salir mal?"
-            className="dash-input" />
-          <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-            placeholder="Descripción del riesgo..."
-            className="dash-textarea h-16" />
-          <textarea value={form.mitigation} onChange={e => setForm({ ...form, mitigation: e.target.value })}
-            placeholder="Estrategia de mitigación..."
-            className="dash-textarea h-16" />
-          <div className="flex gap-3 flex-wrap">
-            <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as Risk['category'] })}
-              className="dash-select">
-              {Object.entries(CATEGORY_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.emoji} {v.label}</option>)}
-            </select>
-            <select value={form.probability} onChange={e => setForm({ ...form, probability: e.target.value as Risk['probability'] })}
-              className="dash-select">
-              <option value="alta">Prob: Alta</option><option value="media">Prob: Media</option><option value="baja">Prob: Baja</option>
-            </select>
-            <select value={form.impact} onChange={e => setForm({ ...form, impact: e.target.value as Risk['impact'] })}
-              className="dash-select">
-              <option value="crítico">Impacto: Crítico</option><option value="alto">Impacto: Alto</option><option value="medio">Impacto: Medio</option><option value="bajo">Impacto: Bajo</option>
-            </select>
-          </div>
-          <div className="flex gap-2 pt-1">
-            <button onClick={addRisk} className="dash-btn-primary">Identificar</button>
-            <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-3 shadow-sm">
+              <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                placeholder="¿Qué podría salir mal?"
+                className="dash-input" />
+              <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
+                placeholder="Descripción del riesgo..."
+                className="dash-textarea h-16" />
+              <textarea value={form.mitigation} onChange={e => setForm({ ...form, mitigation: e.target.value })}
+                placeholder="Estrategia de mitigación..."
+                className="dash-textarea h-16" />
+              <div className="flex gap-3 flex-wrap">
+                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as Risk['category'] })}
+                  className="dash-select">
+                  {Object.entries(CATEGORY_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.emoji} {v.label}</option>)}
+                </select>
+                <select value={form.probability} onChange={e => setForm({ ...form, probability: e.target.value as Risk['probability'] })}
+                  className="dash-select">
+                  <option value="alta">Prob: Alta</option><option value="media">Prob: Media</option><option value="baja">Prob: Baja</option>
+                </select>
+                <select value={form.impact} onChange={e => setForm({ ...form, impact: e.target.value as Risk['impact'] })}
+                  className="dash-select">
+                  <option value="crítico">Impacto: Crítico</option><option value="alto">Impacto: Alto</option><option value="medio">Impacto: Medio</option><option value="bajo">Impacto: Bajo</option>
+                </select>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button onClick={addRisk} className="dash-btn-primary">Identificar</button>
+                <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Risk cards */}
-      <div className="space-y-3">
+      <motion.div className="space-y-3" variants={stagger}>
         {filtered.map(r => {
           const rs = riskScore(r.probability, r.impact)
           const cat = CATEGORY_CONFIG[r.category]
           const owner = TEAM_USERS.find(u => u.id === r.owner)
           return (
-            <div key={r.id} className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-[1px] transition-all group">
+            <motion.div
+              key={r.id}
+              variants={fadeIn}
+              transition={{ duration: 0.3 }}
+              whileHover={{ y: -1 }}
+              className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow group"
+            >
               <div className="flex items-start gap-4">
                 {/* Score badge */}
                 <div className="w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0" style={{ background: rs.bg }}>
@@ -221,7 +241,7 @@ export default function RiesgosPage() {
 
                   {/* Mitigation */}
                   {r.mitigation && (
-                    <div className="mt-3 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+                    <div className="mt-3 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
                       <p className="text-[10px] text-emerald-700 font-semibold mb-1">🛡️ Mitigación</p>
                       <p className="text-xs text-gray-600 leading-relaxed">{r.mitigation}</p>
                     </div>
@@ -238,10 +258,19 @@ export default function RiesgosPage() {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )
         })}
-      </div>
-    </div>
+      </motion.div>
+
+      {filtered.length === 0 && (
+        <motion.div variants={fadeIn} className="text-center py-16">
+          <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Shield size={28} className="text-amber-300" />
+          </div>
+          <p className="text-gray-400 text-sm">Sin riesgos en esta categoría</p>
+        </motion.div>
+      )}
+    </motion.div>
   )
 }

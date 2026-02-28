@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react'
 import { getDecisions, saveDecisions, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Decision } from '../../data'
-import { BookOpen, Plus, ChevronDown, ChevronRight, X, ArrowRight, Pencil, Trash2 } from 'lucide-react'
+import { BookOpen, Plus, ChevronDown, ChevronRight, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const fadeIn = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } }
+const stagger = { animate: { transition: { staggerChildren: 0.08 } } }
 
 const CATEGORY_STYLES: Record<string, { emoji: string; label: string; color: string; bg: string }> = {
   tech: { emoji: '⚙️', label: 'Tech', color: '#4338ca', bg: '#eef2ff' },
@@ -57,71 +61,89 @@ export default function DecisionesPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <motion.div className="space-y-8" initial="initial" animate="animate" variants={stagger}>
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <BookOpen size={24} className="text-indigo-600" /> Decision Log
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <BookOpen size={20} className="text-indigo-600" />
+            </div>
+            Decision Log
           </h1>
           <p className="text-gray-500 text-sm mt-1.5">Por qué tomamos cada decisión importante</p>
         </div>
         <button onClick={() => setShowForm(!showForm)} className="dash-btn-primary">
           <Plus size={16} /> Registrar
         </button>
-      </div>
+      </motion.div>
 
       {/* Insight banner */}
-      <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 flex items-start gap-3">
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 rounded-xl p-5 flex items-start gap-3">
         <span className="text-lg">💡</span>
         <div>
           <p className="text-xs text-indigo-700 font-semibold">¿Por qué un Decision Log?</p>
           <p className="text-[12px] text-gray-600 mt-1 leading-relaxed">Las mejores startups documentan el <span className="text-indigo-600 font-medium">por qué</span> detrás de cada decisión. Cuando un inversor pregunta "¿por qué no usaron blockchain?", tenés la respuesta lista con contexto y alternativas evaluadas.</p>
         </div>
-      </div>
+      </motion.div>
 
-      {showForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-3 shadow-sm">
-          <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-            placeholder="Título de la decisión"
-            className="dash-input" />
-          <textarea value={form.context} onChange={e => setForm({ ...form, context: e.target.value })}
-            placeholder="Contexto: ¿Qué problema había?"
-            className="dash-textarea h-16" />
-          <textarea value={form.decision} onChange={e => setForm({ ...form, decision: e.target.value })}
-            placeholder="Decisión: ¿Qué se decidió?"
-            className="dash-textarea h-16" />
-          <textarea value={form.alternatives} onChange={e => setForm({ ...form, alternatives: e.target.value })}
-            placeholder="Alternativas evaluadas (una por línea)"
-            className="dash-textarea h-16" />
-          <textarea value={form.rationale} onChange={e => setForm({ ...form, rationale: e.target.value })}
-            placeholder="Razonamiento: ¿Por qué esta opción?"
-            className="dash-textarea h-16" />
-          <div className="flex gap-3">
-            <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as Decision['category'] })}
-              className="dash-select">
-              <option value="tech">⚙️ Tech</option><option value="negocio">💼 Negocio</option>
-              <option value="legal">⚖️ Legal</option><option value="producto">🎯 Producto</option>
-            </select>
-            <select value={form.impact} onChange={e => setForm({ ...form, impact: e.target.value as Decision['impact'] })}
-              className="dash-select">
-              <option value="alta">🔴 Impacto alto</option><option value="media">🟡 Impacto medio</option><option value="baja">⚪ Impacto bajo</option>
-            </select>
-          </div>
-          <div className="flex gap-2 pt-1">
-            <button onClick={addDecision} className="dash-btn-primary">Registrar</button>
-            <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-3 shadow-sm">
+              <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                placeholder="Título de la decisión"
+                className="dash-input" />
+              <textarea value={form.context} onChange={e => setForm({ ...form, context: e.target.value })}
+                placeholder="Contexto: ¿Qué problema había?"
+                className="dash-textarea h-16" />
+              <textarea value={form.decision} onChange={e => setForm({ ...form, decision: e.target.value })}
+                placeholder="Decisión: ¿Qué se decidió?"
+                className="dash-textarea h-16" />
+              <textarea value={form.alternatives} onChange={e => setForm({ ...form, alternatives: e.target.value })}
+                placeholder="Alternativas evaluadas (una por línea)"
+                className="dash-textarea h-16" />
+              <textarea value={form.rationale} onChange={e => setForm({ ...form, rationale: e.target.value })}
+                placeholder="Razonamiento: ¿Por qué esta opción?"
+                className="dash-textarea h-16" />
+              <div className="flex gap-3">
+                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as Decision['category'] })}
+                  className="dash-select">
+                  <option value="tech">⚙️ Tech</option><option value="negocio">💼 Negocio</option>
+                  <option value="legal">⚖️ Legal</option><option value="producto">🎯 Producto</option>
+                </select>
+                <select value={form.impact} onChange={e => setForm({ ...form, impact: e.target.value as Decision['impact'] })}
+                  className="dash-select">
+                  <option value="alta">🔴 Impacto alto</option><option value="media">🟡 Impacto medio</option><option value="baja">⚪ Impacto bajo</option>
+                </select>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button onClick={addDecision} className="dash-btn-primary">Registrar</button>
+                <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Decisions timeline */}
-      <div className="space-y-3">
+      <motion.div className="space-y-3" variants={stagger}>
         {decisions.map(d => {
           const isOpen = expanded.includes(d.id)
           const cat = CATEGORY_STYLES[d.category]
           const imp = IMPACT_STYLES[d.impact]
           return (
-            <div key={d.id} className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-[1px] transition-all group">
+            <motion.div
+              key={d.id}
+              variants={fadeIn}
+              transition={{ duration: 0.3 }}
+              whileHover={{ y: -1 }}
+              className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
+            >
               <button onClick={() => toggle(d.id)} className="w-full text-left px-5 py-4 flex items-center gap-3">
                 {isOpen ? <ChevronDown size={16} className="text-gray-400 shrink-0" /> : <ChevronRight size={16} className="text-gray-400 shrink-0" />}
                 <div className="flex-1 min-w-0">
@@ -145,46 +167,56 @@ export default function DecisionesPage() {
                 </button>
               </button>
 
-              {isOpen && (
-                <div className="px-5 pb-5 space-y-4">
-                  {d.context && (
-                    <div>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Contexto</p>
-                      <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 rounded-xl p-3">{d.context}</p>
-                    </div>
-                  )}
+              <AnimatePresence>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 pb-5 space-y-4">
+                      {d.context && (
+                        <div>
+                          <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Contexto</p>
+                          <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 rounded-lg p-3">{d.context}</p>
+                        </div>
+                      )}
 
-                  <div>
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Decisión</p>
-                    <p className="text-xs text-gray-900 font-medium leading-relaxed bg-indigo-50 border border-indigo-100 rounded-xl p-3">{d.decision}</p>
-                  </div>
-
-                  {d.alternatives.length > 0 && (
-                    <div>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Alternativas evaluadas</p>
-                      <div className="space-y-1.5">
-                        {d.alternatives.map((alt, i) => (
-                          <div key={i} className="flex items-center gap-2 text-xs text-gray-500">
-                            <X size={12} className="text-red-400 shrink-0" />
-                            <span>{alt}</span>
-                          </div>
-                        ))}
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Decisión</p>
+                        <p className="text-xs text-gray-900 font-medium leading-relaxed bg-indigo-50 border border-indigo-100 rounded-lg p-3">{d.decision}</p>
                       </div>
-                    </div>
-                  )}
 
-                  {d.rationale && (
-                    <div>
-                      <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Razonamiento</p>
-                      <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 rounded-xl p-3 border-l-2 border-indigo-400">{d.rationale}</p>
+                      {d.alternatives.length > 0 && (
+                        <div>
+                          <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Alternativas evaluadas</p>
+                          <div className="space-y-1.5">
+                            {d.alternatives.map((alt, i) => (
+                              <div key={i} className="flex items-center gap-2 text-xs text-gray-500">
+                                <X size={12} className="text-red-400 shrink-0" />
+                                <span>{alt}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {d.rationale && (
+                        <div>
+                          <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5 font-semibold">Razonamiento</p>
+                          <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 rounded-lg p-3 border-l-2 border-indigo-400">{d.rationale}</p>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           )
         })}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

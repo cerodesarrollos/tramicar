@@ -3,7 +3,11 @@ import { useEffect, useState } from 'react'
 import { getIdeas, saveIdeas, addActivity, getUser } from '../../store'
 import { TEAM_USERS } from '../../data'
 import type { Idea } from '../../data'
-import { Lightbulb, Plus, X, GripVertical, Pencil, Trash2 } from 'lucide-react'
+import { Lightbulb, Plus, Pencil, Trash2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const fadeIn = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } }
+const stagger = { animate: { transition: { staggerChildren: 0.06 } } }
 
 const COLUMNS: { key: Idea['status']; label: string; color: string; bg: string }[] = [
   { key: 'nueva', label: '💡 Nueva', color: '#4338ca', bg: '#eef2ff' },
@@ -68,36 +72,48 @@ export default function IdeasPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
+    <motion.div className="space-y-8" initial="initial" animate="animate" variants={stagger}>
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <Lightbulb size={24} className="text-amber-500" /> Ideas
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+              <Lightbulb size={20} className="text-amber-500" />
+            </div>
+            Ideas
           </h1>
           <p className="text-gray-500 text-sm mt-1.5">Board de ideas del equipo</p>
         </div>
         <button onClick={() => { setShowForm(!showForm); setEditingId(null); setForm({ title: '', description: '' }) }} className="dash-btn-primary">
           <Plus size={16} /> Nueva idea
         </button>
-      </div>
+      </motion.div>
 
-      {showForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-3 shadow-sm">
-          <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-            placeholder="Título de la idea" onKeyDown={e => e.key === 'Enter' && !e.shiftKey && saveIdea()}
-            className="dash-input" />
-          <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
-            placeholder="Descripción..."
-            className="dash-textarea h-20" />
-          <div className="flex gap-2 pt-1">
-            <button onClick={saveIdea} className="dash-btn-primary">Agregar</button>
-            <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-3 shadow-sm">
+              <input autoFocus value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                placeholder="Título de la idea" onKeyDown={e => e.key === 'Enter' && !e.shiftKey && saveIdea()}
+                className="dash-input" />
+              <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
+                placeholder="Descripción..."
+                className="dash-textarea h-20" />
+              <div className="flex gap-2 pt-1">
+                <button onClick={saveIdea} className="dash-btn-primary">Agregar</button>
+                <button onClick={() => setShowForm(false)} className="dash-btn-secondary">Cancelar</button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Kanban - scrollable on mobile */}
-      <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
+      {/* Kanban */}
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 lg:mx-0 lg:px-0">
         {COLUMNS.map(col => {
           const colIdeas = ideas.filter(i => i.status === col.key)
           return (
@@ -107,10 +123,17 @@ export default function IdeasPage() {
                 <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{colIdeas.length}</span>
               </div>
               <div className="space-y-2.5">
-                {colIdeas.map(idea => {
+                {colIdeas.map((idea, i) => {
                   const author = TEAM_USERS.find(u => u.id === idea.author)
                   return (
-                    <div key={idea.id} className="bg-white border border-gray-100 rounded-xl p-3.5 shadow-sm hover:shadow-md hover:-translate-y-[1px] transition-all group">
+                    <motion.div
+                      key={idea.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      whileHover={{ y: -2, boxShadow: '0 8px 25px -5px rgba(0,0,0,0.08)' }}
+                      className="bg-white border border-gray-100 rounded-xl p-3.5 shadow-sm transition-shadow group"
+                    >
                       <div className="flex items-start justify-between gap-2">
                         <h4 className="text-sm font-semibold text-gray-900">{idea.title}</h4>
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all shrink-0">
@@ -124,7 +147,6 @@ export default function IdeasPage() {
                           <span className="w-5 h-5 rounded-full text-[10px] flex items-center justify-center" style={{ background: `${author?.color || '#666'}15` }}>{author?.avatar}</span>
                           <span className="text-[10px] text-gray-400">{idea.createdAt}</span>
                         </div>
-                        {/* Move buttons */}
                         <select
                           value={idea.status}
                           onChange={e => moveIdea(idea.id, e.target.value as Idea['status'])}
@@ -133,14 +155,14 @@ export default function IdeasPage() {
                           {COLUMNS.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}
                         </select>
                       </div>
-                    </div>
+                    </motion.div>
                   )
                 })}
               </div>
             </div>
           )
         })}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

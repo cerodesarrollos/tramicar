@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #f5f7fa;
+  --color-bg: #f8f9fb;
   --color-surface: #ffffff;
-  --color-surface2: #f0f2f5;
-  --color-surface3: #e8eaef;
+  --color-surface2: #f1f3f5;
+  --color-surface3: #e9ecef;
   --color-primary: #4338ca;
   --color-primary2: #5b4fdb;
   --color-primary-light: #eef2ff;
@@ -16,55 +16,50 @@
   --color-red-light: #fef2f2;
   --color-blue: #2563eb;
   --color-blue-light: #eff6ff;
-  --color-text: #1a1a2e;
-  --color-text2: #4a4a6a;
+  --color-text: #111827;
+  --color-text2: #4b5563;
   --color-gray: #6b7280;
   --color-gray2: #9ca3af;
   --color-border: #e5e7eb;
   --color-border2: #d1d5db;
-  --font-sans: 'Inter', sans-serif;
-  --font-display: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   background: var(--color-bg);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-family: var(--font-sans);
 }
 
-::-webkit-scrollbar { width: 6px; }
+::selection {
+  background: rgba(67, 56, 202, 0.12);
+  color: #1e1b4b;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.14); }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(67,56,202,0.15); }
-  50% { box-shadow: 0 0 0 8px rgba(67,56,202,0); }
-}
-.animate-slide-up { animation: slideUp 0.5s ease forwards; }
-.animate-pulse-glow { animation: pulse-glow 2s infinite; }
-
 /* Dashboard light theme form controls */
 .dash-input {
-  @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 transition-all;
+  @apply w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all;
 }
 .dash-textarea {
-  @apply w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 resize-none transition-all;
+  @apply w-full bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-gray-900 text-sm placeholder:text-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 resize-none transition-all;
 }
 .dash-select {
-  @apply bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/10 cursor-pointer transition-all;
+  @apply bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 cursor-pointer transition-all;
 }
 .dash-btn-primary {
-  @apply bg-gray-900 hover:bg-gray-800 text-white text-sm px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all font-medium shadow-sm;
+  @apply bg-gray-900 hover:bg-gray-800 text-white text-sm px-4 py-2.5 rounded-lg flex items-center gap-2 transition-all font-medium shadow-sm active:scale-[0.98];
 }
 .dash-btn-secondary {
   @apply text-gray-500 hover:text-gray-700 text-sm px-4 py-2 transition-colors;
 }
 .dash-card {
-  @apply bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-[1px] transition-all;
+  @apply bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200;
 }

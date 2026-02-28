@@ -5,6 +5,10 @@ import { createClient } from '@/lib/supabase/client'
 import { TEAM_USERS } from '../../data'
 import type { TeamUser } from '../../data'
 import { StickyNote, Send, Sparkles, Loader2, CheckCircle2, Clock, Trash2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+
+const fadeIn = { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 } }
+const stagger = { animate: { transition: { staggerChildren: 0.06 } } }
 
 interface Note {
   id: string
@@ -69,7 +73,6 @@ export default function NotepadPage() {
     const sb = createClient()
 
     try {
-      // Call AI classification API
       const res = await fetch('/api/classify-note', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -147,16 +150,19 @@ export default function NotepadPage() {
   const otherNotes = notes.filter(n => n.user_id !== user?.id)
 
   return (
-    <div className="space-y-8">
-      <div>
+    <motion.div className="space-y-8" initial="initial" animate="animate" variants={stagger}>
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }}>
         <h1 className="font-display text-3xl font-bold text-gray-900 flex items-center gap-3">
-          <StickyNote size={24} className="text-yellow-500" /> Notepad
+          <div className="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center">
+            <StickyNote size={20} className="text-yellow-500" />
+          </div>
+          Notepad
         </h1>
         <p className="text-gray-500 text-sm mt-1.5">Escribí lo que se te ocurra. Después lo ordenamos al dashboard.</p>
-      </div>
+      </motion.div>
 
       {/* Input */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+      <motion.div variants={fadeIn} transition={{ duration: 0.4 }} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
         <textarea
           ref={textareaRef}
           value={text}
@@ -176,51 +182,59 @@ export default function NotepadPage() {
             <Send size={13} /> Guardar
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* My Notes */}
       {myNotes.length > 0 && (
-        <div>
+        <motion.div variants={fadeIn} transition={{ duration: 0.4 }}>
           <h3 className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Mis notas</h3>
           <div className="space-y-2.5">
-            {myNotes.map(note => (
-              <NoteCard key={note.id} note={note} onProcess={processNote} onDelete={deleteNote} processing={processing} />
+            {myNotes.map((note, i) => (
+              <NoteCard key={note.id} note={note} onProcess={processNote} onDelete={deleteNote} processing={processing} index={i} />
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Other Notes */}
       {otherNotes.length > 0 && (
-        <div>
+        <motion.div variants={fadeIn} transition={{ duration: 0.4 }}>
           <h3 className="text-xs text-gray-400 uppercase tracking-wider mb-3 font-semibold">Notas del equipo</h3>
           <div className="space-y-2.5">
-            {otherNotes.map(note => (
-              <NoteCard key={note.id} note={note} onProcess={processNote} onDelete={deleteNote} processing={processing} showAuthor />
+            {otherNotes.map((note, i) => (
+              <NoteCard key={note.id} note={note} onProcess={processNote} onDelete={deleteNote} processing={processing} showAuthor index={i} />
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {notes.length === 0 && (
-        <div className="text-center py-12">
-          <StickyNote size={32} className="text-gray-300 mx-auto mb-3" />
+        <motion.div variants={fadeIn} className="text-center py-16">
+          <div className="w-16 h-16 bg-yellow-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <StickyNote size={28} className="text-yellow-300" />
+          </div>
           <p className="text-gray-400 text-sm">Todavía no hay notas. ¡Arrancá!</p>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   )
 }
 
-function NoteCard({ note, onProcess, onDelete, processing, showAuthor }: {
-  note: Note; onProcess: (n: Note) => void; onDelete: (id: string) => void; processing: string | null; showAuthor?: boolean
+function NoteCard({ note, onProcess, onDelete, processing, showAuthor, index }: {
+  note: Note; onProcess: (n: Note) => void; onDelete: (id: string) => void; processing: string | null; showAuthor?: boolean; index: number
 }) {
   const author = TEAM_USERS.find(u => u.id === note.user_id)
   const isProcessing = processing === note.id
   const time = new Date(note.created_at).toLocaleString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className={`bg-white border rounded-xl p-4 transition-all group shadow-sm ${note.processed ? 'border-emerald-200' : 'border-gray-100 hover:shadow-md hover:-translate-y-[1px]'}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04 }}
+      whileHover={!note.processed ? { y: -1 } : undefined}
+      className={`bg-white border rounded-xl p-4 transition-shadow group shadow-sm ${note.processed ? 'border-emerald-200' : 'border-gray-100 hover:shadow-md'}`}
+    >
       <div className="flex items-start gap-3">
         {showAuthor && (
           <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0" style={{ background: `${author?.color || '#666'}12` }}>
@@ -241,7 +255,7 @@ function NoteCard({ note, onProcess, onDelete, processing, showAuthor }: {
             )}
           </div>
           {note.processed && note.ai_suggestion && (
-            <div className="mt-2 px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-lg">
+            <div className="mt-2 px-3 py-2 bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-100 rounded-lg">
               <p className="text-[10px] text-indigo-600 uppercase tracking-wider mb-0.5 flex items-center gap-1 font-semibold">
                 <Sparkles size={10} /> Sugerencia IA
               </p>
@@ -268,6 +282,6 @@ function NoteCard({ note, onProcess, onDelete, processing, showAuthor }: {
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
